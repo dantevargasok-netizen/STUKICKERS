@@ -16,9 +16,9 @@
     --ink:#f1ecdd;
     --ink-dim:#aeb4c2;
     --muted:#6d7688;
-    --pink:#ff3d77;
+    --pink:#f2b705;
     --teal:#35d0ba;
-    --yellow:#f4c93e;
+    --yellow:#ffd84d;
     --line:#2c3341;
     --radius:14px;
   }
@@ -30,7 +30,7 @@
     font-family:'Space Grotesk',sans-serif;
     min-height:100vh;
     background-image:
-      radial-gradient(circle at 15% 8%, rgba(255,61,119,0.08), transparent 40%),
+      radial-gradient(circle at 15% 8%, rgba(242,183,5,0.10), transparent 40%),
       radial-gradient(circle at 85% 90%, rgba(53,208,186,0.07), transparent 40%);
   }
   h1,h2,h3,h4{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:0.5px;text-transform:uppercase;margin:0;}
@@ -88,14 +88,14 @@
   }
   .hero::after{
     content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;
-    background:radial-gradient(circle,rgba(255,61,119,0.18),transparent 70%);
+    background:radial-gradient(circle,rgba(242,183,5,0.20),transparent 70%);
   }
   .hero h1{font-size:38px;color:var(--paper);}
   .hero .sub{color:var(--ink-dim);margin-top:8px;font-size:15px;}
   .countdown{
     background:var(--pink);color:#12151c;border-radius:16px;padding:18px 26px;
     text-align:center;min-width:170px;transform:rotate(-2deg);
-    box-shadow:0 10px 26px -8px rgba(255,61,119,0.5);
+    box-shadow:0 10px 26px -8px rgba(242,183,5,0.45);
   }
   .countdown .num{font-family:'Anton',sans-serif;font-size:48px;line-height:1;}
   .countdown .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-top:4px;}
@@ -154,6 +154,48 @@
   .btn{background:var(--pink);border:none;color:#12151c;font-weight:700;padding:9px 18px;border-radius:8px;font-size:13px;}
   .btn.alt{background:var(--teal);}
   .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink-dim);}
+  .colorpick{
+    -webkit-appearance:none;appearance:none;width:100%;height:38px;padding:0;border:1px solid var(--line);
+    border-radius:8px;background:var(--bg);cursor:pointer;
+  }
+  .colorpick::-webkit-color-swatch-wrapper{padding:3px;}
+  .colorpick::-webkit-color-swatch{border:none;border-radius:6px;}
+
+  .cal-wrap{margin-top:22px;}
+  .cal-head{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:14px;}
+  .cal-head h3{font-size:17px;color:var(--paper);min-width:170px;text-align:center;}
+  .cal-nav{
+    width:34px;height:34px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);
+    color:var(--ink);font-size:16px;display:flex;align-items:center;justify-content:center;
+  }
+  .cal-nav:hover{border-color:var(--pink);color:var(--pink);}
+  .cal-weekdays{
+    display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;
+    color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:700;
+  }
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+  .cal-day{
+    aspect-ratio:1/1;border-radius:10px;background:var(--surface2);border:1px solid var(--line);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    font-size:13px;font-weight:600;position:relative;cursor:pointer;transition:.12s ease;
+    min-height:46px;
+  }
+  .cal-day:hover{border-color:var(--pink);transform:translateY(-1px);}
+  .cal-day.blank{background:transparent;border:none;cursor:default;pointer-events:none;}
+  .cal-day.today{border:2px solid var(--teal);color:var(--teal);}
+  .cal-day.selected{outline:2px solid var(--pink);}
+  .cal-day .dots{display:flex;gap:3px;position:absolute;bottom:6px;}
+  .cal-day .dots span{width:6px;height:6px;border-radius:50%;display:block;}
+  .cal-day.haseventos{padding-top:2px;}
+  .cal-seleccion{margin-top:16px;}
+  .cal-seleccion .ev-chip{
+    display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:10px;
+    padding:10px 14px;margin-bottom:8px;font-size:13.5px;
+  }
+  .cal-seleccion .ev-chip .sw{width:12px;height:12px;border-radius:4px;flex-shrink:0;}
+  .cal-seleccion .ev-chip button{margin-left:auto;background:transparent;border:none;color:var(--muted);font-size:15px;}
+  .cal-seleccion .ev-chip button:hover{color:var(--pink);}
+
   .event-item,.task-item{
     display:flex;justify-content:space-between;align-items:center;padding:12px 14px;
     background:var(--surface2);border-radius:10px;margin-bottom:8px;border-left:3px solid var(--pink);
@@ -199,9 +241,28 @@
   }
 
   /* CHAT */
+  .sync-overlay{
+    position:fixed;inset:0;background:rgba(10,12,16,.72);display:none;
+    align-items:center;justify-content:center;z-index:80;padding:20px;
+  }
+  .sync-overlay.open{display:flex;}
+  .sync-modal{
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:26px;max-width:460px;width:100%;max-height:88vh;overflow-y:auto;
+  }
+  .sync-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .sync-head h3{font-size:17px;color:var(--paper);}
+  .sync-close{background:transparent;border:none;color:var(--ink-dim);font-size:18px;}
+  .sync-status{font-size:13px;color:var(--ink-dim);background:var(--surface2);padding:10px 12px;border-radius:10px;margin-bottom:14px;}
+  .sync-steps{font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin-bottom:14px;}
+  .sync-steps strong{color:var(--yellow);}
+  #syncConfig,#syncCode{
+    width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);
+    padding:10px 12px;border-radius:8px;font-size:12.5px;margin-top:4px;font-family:'JetBrains Mono',monospace;
+  }
   .chat-toggle{
     position:fixed;bottom:26px;right:26px;width:60px;height:60px;border-radius:50%;
-    background:var(--pink);border:none;box-shadow:0 8px 24px -6px rgba(255,61,119,.6);
+    background:var(--pink);border:none;box-shadow:0 8px 24px -6px rgba(242,183,5,.5);
     display:flex;align-items:center;justify-content:center;z-index:50;
   }
   .chat-toggle svg{width:26px;height:26px;stroke:#12151c;fill:none;stroke-width:2;}
@@ -226,12 +287,37 @@
   label.small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;}
   .field{display:flex;flex-direction:column;flex:1;min-width:130px;}
 
+  @media(max-width:900px){
+    .roster{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));}
+  }
   @media(max-width:700px){
     .app{flex-direction:column;}
-    .sidebar{width:100%;height:auto;flex-direction:row;position:static;padding:10px;}
+    .sidebar{
+      width:100%;height:auto;flex-direction:row;position:fixed;bottom:0;left:0;padding:8px 4px;
+      z-index:60;border-right:none;border-top:1px solid var(--line);
+      justify-content:space-between;overflow-x:auto;
+    }
     .brand{display:none;}
-    .navlist{flex-direction:row;flex-wrap:wrap;justify-content:center;}
-    .main{padding:20px;}
+    .navlist{flex-direction:row;flex:none;gap:2px;}
+    .navbtn{width:auto;min-width:52px;height:52px;padding:0 4px;font-size:9px;}
+    #syncOpenBtn{width:52px;height:52px;margin-top:0;}
+    .main{padding:18px 14px 90px;}
+    .hero{padding:24px 20px;flex-direction:column;align-items:flex-start;}
+    .hero h1{font-size:26px;}
+    .countdown{align-self:stretch;transform:none;}
+    .addform{flex-direction:column;}
+    .addform .field{min-width:0;}
+    .cal-grid{gap:4px;}
+    .cal-day{min-height:38px;font-size:11px;border-radius:8px;}
+    .cal-head h3{font-size:14px;min-width:0;}
+    .chat-window{right:10px;left:10px;width:auto;bottom:84px;max-height:60vh;}
+    .chat-toggle{bottom:76px;right:16px;}
+    .sync-modal{padding:18px;}
+    .roster{grid-template-columns:1fr;}
+  }
+  @media(max-width:420px){
+    .navbtn span,.navbtn{font-size:8.5px;}
+    .cal-day{min-height:32px;}
   }
 </style>
 </head>
@@ -245,6 +331,7 @@
       <button class="navbtn" data-view="propuestas"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Propuestas</button>
       <button class="navbtn" data-view="ayuda"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 115.8 1c0 2-3 2-3 4M12 17h.01"/></svg>Ayuda</button>
       <button class="navbtn" data-view="actas"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 15h6M9 11h6"/></svg>Actas</button>
+      <button class="navbtn" id="syncOpenBtn"><svg viewBox="0 0 24 24"><path d="M21 2v6h-6M3 12a9 9 0 0115-6.7L21 8M3 22v-6h6M21 12a9 9 0 01-15 6.7L3 16"/></svg>Sync</button>
     </div>
   </div>
 
@@ -280,14 +367,33 @@
     <!-- CALENDARIO -->
     <div class="view" id="view-calendario">
       <div class="section-title"><h2>Agenda y tareas</h2><span class="stamp" id="rangoFechas"></span></div>
+
+      <div class="panel" style="margin-bottom:20px;">
+        <div class="addform" style="align-items:flex-end;">
+          <div class="field"><label class="small">Fecha</label><input type="date" id="evFecha"></div>
+          <div class="field" style="flex:2"><label class="small">Título</label><input type="text" id="evTitulo" placeholder="Ej: Reunión con dirección"></div>
+          <div class="field" style="flex:0 0 70px;"><label class="small">Color</label><input type="color" id="evColor" value="#f2b705" class="colorpick"></div>
+          <button class="btn" id="addEvento">Agregar</button>
+        </div>
+
+        <div class="cal-wrap">
+          <div class="cal-head">
+            <button class="cal-nav" id="calPrev">‹</button>
+            <h3 id="calTitulo"></h3>
+            <button class="cal-nav" id="calNext">›</button>
+          </div>
+          <div class="cal-weekdays">
+            <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+
+        <div id="calSeleccion" class="cal-seleccion"></div>
+      </div>
+
       <div class="grid2">
         <div class="panel">
-          <h3 style="font-size:14px;color:var(--paper);margin-bottom:14px;">Fechas importantes</h3>
-          <div class="addform">
-            <div class="field"><label class="small">Fecha</label><input type="date" id="evFecha"></div>
-            <div class="field" style="flex:2"><label class="small">Título</label><input type="text" id="evTitulo" placeholder="Ej: Reunión con dirección"></div>
-            <button class="btn" id="addEvento" style="align-self:flex-end;">Agregar</button>
-          </div>
+          <h3 style="font-size:14px;color:var(--paper);margin-bottom:14px;">Todas las fechas importantes</h3>
           <div id="listaEventos"></div>
         </div>
         <div class="panel">
@@ -327,7 +433,11 @@
       <div class="panel">
         <div class="addform">
           <div class="field"><label class="small">Tipo de documento</label>
-            <select id="actaTipo"><option value="permiso">Solicitud de permiso</option><option value="acta">Acta de reunión</option></select>
+            <select id="actaTipo">
+              <option value="permiso">Solicitud de permiso</option>
+              <option value="acta">Acta de reunión</option>
+              <option value="autorizacion">Autorización (cuaderno de comunicados)</option>
+            </select>
           </div>
           <div class="field"><label class="small">Actividad</label><input type="text" id="actaActividad" placeholder="Ej: Jornada solidaria"></div>
           <div class="field"><label class="small">Fecha</label><input type="date" id="actaFecha"></div>
@@ -336,6 +446,11 @@
           <div class="field"><label class="small">Horario</label><input type="text" id="actaHorario" placeholder="Ej: 09:00 a 12:00 hs"></div>
           <div class="field"><label class="small">Lugar</label><input type="text" id="actaLugar" placeholder="Ej: Patio principal"></div>
           <div class="field"><label class="small">Responsable</label><input type="text" id="actaResponsable" placeholder="Ej: Tomás Pérez, Presidente"></div>
+        </div>
+        <div class="addform" id="actaCamposAlumno" style="display:none;">
+          <div class="field"><label class="small">Nombre del alumno/a</label><input type="text" id="actaAlumno" placeholder="Ej: Juana Pérez"></div>
+          <div class="field"><label class="small">Curso del alumno/a</label><input type="text" id="actaCursoAlumno" placeholder="Ej: 5° 2ª"></div>
+          <div class="field"><label class="small">Padre/Madre/Tutor</label><input type="text" id="actaTutor" placeholder="Ej: María Gómez"></div>
         </div>
         <div class="addform">
           <div class="field" style="flex:3"><label class="small">Detalle / justificación</label><input type="text" id="actaDetalle" placeholder="Breve descripción de la actividad y su objetivo"></div>
@@ -347,6 +462,28 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- SYNC MODAL -->
+<div class="sync-overlay" id="syncOverlay">
+  <div class="sync-modal">
+    <div class="sync-head">
+      <h3>Sincronizar entre dispositivos</h3>
+      <button class="sync-close" id="syncClose">✕</button>
+    </div>
+    <p class="sync-status" id="syncStatus">Por ahora los datos se guardan solo en este dispositivo/navegador.</p>
+    <div class="sync-steps">
+      <p><strong>1.</strong> Andá a <span class="mono">console.firebase.google.com</span>, creá un proyecto gratis y agregá una app web.</p>
+      <p><strong>2.</strong> Activá <strong>Firestore Database</strong> (modo de prueba) desde el menú del proyecto.</p>
+      <p><strong>3.</strong> Copiá el objeto <span class="mono">firebaseConfig</span> que te da Firebase y pegalo acá abajo tal cual.</p>
+    </div>
+    <label class="small">Configuración de Firebase (firebaseConfig)</label>
+    <textarea id="syncConfig" rows="6" placeholder='{ apiKey: "...", authDomain: "...", projectId: "...", ... }'></textarea>
+    <label class="small" style="margin-top:10px;">Código de sincronización (elegí uno y usalo en todos tus dispositivos)</label>
+    <input type="text" id="syncCode" placeholder="ej: centro-tomas-2026">
+    <button class="btn" id="syncConnect" style="margin-top:14px;width:100%;">Conectar y sincronizar</button>
+    <button class="btn ghost" id="syncDisconnect" style="margin-top:8px;width:100%;">Desconectar</button>
   </div>
 </div>
 
@@ -365,12 +502,16 @@ const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const uid = () => Math.random().toString(36).slice(2,9);
 const load = (k,d) => { try{ const v = JSON.parse(localStorage.getItem(k)); return v===null?d:v; }catch(e){return d;} };
-const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+const SYNC_KEYS = ['cargos','eventos','tareas','propuestas'];
+function save(k,v){
+  localStorage.setItem(k, JSON.stringify(v));
+  if(SYNC_KEYS.includes(k)) pushSync();
+}
 
 /* ================= NAVEGACIÓN ================= */
-$$('.navbtn').forEach(btn=>{
+$$('.navbtn[data-view]').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    $$('.navbtn').forEach(b=>b.classList.remove('active'));
+    $$('.navbtn[data-view]').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     $$('.view').forEach(v=>v.classList.remove('active'));
     $('#view-'+btn.dataset.view).classList.add('active');
@@ -512,14 +653,82 @@ function renderEventos(){
   ordenados.forEach(ev=>{
     const el = document.createElement('div');
     el.className='event-item';
+    el.style.borderLeftColor = ev.color || 'var(--pink)';
     el.innerHTML = `<div><span class="d">${fmtFechaCorta(ev.fecha)}</span> &nbsp; ${ev.titulo}</div><button class="del">✕</button>`;
     el.querySelector('.del').addEventListener('click', ()=>{
       eventos = eventos.filter(e=>e.id!==ev.id);
-      save('eventos',eventos); renderEventos();
+      save('eventos',eventos); renderEventos(); renderCalendario();
     });
     cont.appendChild(el);
   });
 }
+
+/* ---- Calendario visual ---- */
+let calMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+let diaSeleccionado = null;
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+function isoDeCelda(y,m,d){ return `${y}-${pad(m+1)}-${pad(d)}`; }
+
+function renderCalendario(){
+  const y = calMes.getFullYear(), m = calMes.getMonth();
+  $('#calTitulo').textContent = `${MESES[m]} ${y}`.replace(/^./,c=>c.toUpperCase());
+  const grid = $('#calGrid'); grid.innerHTML='';
+
+  const primerDiaSemana = (new Date(y,m,1).getDay()+6)%7; // lunes=0
+  const diasEnMes = new Date(y,m+1,0).getDate();
+  const todayIso = isoToday();
+
+  for(let i=0;i<primerDiaSemana;i++){
+    const blank = document.createElement('div');
+    blank.className='cal-day blank';
+    grid.appendChild(blank);
+  }
+  for(let d=1; d<=diasEnMes; d++){
+    const iso = isoDeCelda(y,m,d);
+    const evsDia = eventos.filter(e=>e.fecha===iso);
+    const cel = document.createElement('div');
+    cel.className='cal-day'+(iso===todayIso?' today':'')+(iso===diaSeleccionado?' selected':'')+(evsDia.length?' haseventos':'');
+    if(evsDia.length===1){ cel.style.background = hexToSoft(evsDia[0].color); cel.style.borderColor = evsDia[0].color; }
+    cel.innerHTML = `<span>${d}</span>`+(evsDia.length? `<span class="dots">${evsDia.slice(0,4).map(e=>`<span style="background:${e.color||'#f2b705'}"></span>`).join('')}</span>`:'');
+    cel.addEventListener('click', ()=>{
+      diaSeleccionado = iso;
+      $('#evFecha').value = iso;
+      renderCalendario();
+      mostrarSeleccion(iso);
+    });
+    grid.appendChild(cel);
+  }
+}
+function hexToSoft(hex){
+  if(!hex) hex='#f2b705';
+  const h = hex.replace('#','');
+  const r=parseInt(h.substring(0,2),16), g=parseInt(h.substring(2,4),16), b=parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},0.18)`;
+}
+function mostrarSeleccion(iso){
+  const cont = $('#calSeleccion');
+  const evsDia = eventos.filter(e=>e.fecha===iso);
+  const [y,mo,d] = iso.split('-');
+  const fechaTxt = fechaLarga(new Date(+y,+mo-1,+d));
+  let html = `<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">${fechaTxt}</div>`;
+  if(evsDia.length===0){
+    html += '<div class="empty">No hay fechas cargadas este día. Usá el formulario de arriba para agregar una.</div>';
+  } else {
+    evsDia.forEach(ev=>{
+      html += `<div class="ev-chip"><span class="sw" style="background:${ev.color||'#f2b705'}"></span>${ev.titulo}<button class="del" data-id="${ev.id}">✕</button></div>`;
+    });
+  }
+  cont.innerHTML = html;
+  cont.querySelectorAll('.del').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      eventos = eventos.filter(e=>e.id!==b.dataset.id);
+      save('eventos',eventos); renderEventos(); renderCalendario(); mostrarSeleccion(iso);
+    });
+  });
+}
+$('#calPrev').addEventListener('click', ()=>{ calMes = new Date(calMes.getFullYear(), calMes.getMonth()-1, 1); renderCalendario(); });
+$('#calNext').addEventListener('click', ()=>{ calMes = new Date(calMes.getFullYear(), calMes.getMonth()+1, 1); renderCalendario(); });
 function renderTareas(){
   const cont = $('#listaTareas'); cont.innerHTML='';
   const ordenadas = [...tareas].sort((a,b)=> (a.fecha||'').localeCompare(b.fecha||''));
@@ -539,12 +748,14 @@ function renderTareas(){
   });
 }
 $('#addEvento').addEventListener('click', ()=>{
-  const fecha = $('#evFecha').value, titulo = $('#evTitulo').value.trim();
+  const fecha = $('#evFecha').value, titulo = $('#evTitulo').value.trim(), color = $('#evColor').value;
   if(!fecha || !titulo) return;
-  eventos.push({id:uid(),fecha,titulo});
+  eventos.push({id:uid(),fecha,titulo,color});
   save('eventos',eventos);
   $('#evTitulo').value='';
-  renderEventos();
+  diaSeleccionado = fecha;
+  calMes = new Date(+fecha.split('-')[0], +fecha.split('-')[1]-1, 1);
+  renderEventos(); renderCalendario(); mostrarSeleccion(fecha);
 });
 $('#addTarea').addEventListener('click', ()=>{
   const texto = $('#taTexto').value.trim(), fecha = $('#taFecha').value;
@@ -554,7 +765,7 @@ $('#addTarea').addEventListener('click', ()=>{
   $('#taTexto').value='';
   renderTareas();
 });
-renderEventos(); renderTareas();
+renderEventos(); renderTareas(); renderCalendario(); mostrarSeleccion(isoToday());
 
 /* ================= PROPUESTAS ================= */
 let propuestas = load('propuestas', []);
@@ -647,9 +858,34 @@ function generarActa(){
   const responsable = $('#actaResponsable').value.trim() || '________________';
   const detalle = $('#actaDetalle').value.trim() || 'sin detalle adicional';
   const destinatario = $('#actaDestinatario').value.trim() || 'Autoridades del establecimiento';
+  const alumno = $('#actaAlumno').value.trim() || '________________';
+  const cursoAlumno = $('#actaCursoAlumno').value.trim() || '________________';
+  const tutor = $('#actaTutor').value.trim() || '________________';
 
   let texto = '';
-  if(tipo === 'permiso'){
+  if(tipo === 'autorizacion'){
+    texto =
+`AUTORIZACIÓN
+
+Quien suscribe, ${tutor}, en carácter de padre/madre/tutor/a del alumno/a ${alumno}, del curso ${cursoAlumno}, AUTORIZO a que participe de la actividad "${actividad}", organizada por el Centro de Estudiantes, a realizarse el día ${fecha}, en el horario de ${horario}, en ${lugar}.
+
+Detalle de la actividad:
+${detalle}
+
+Declaro conocer las características de la actividad mencionada y autorizo la participación de mi hijo/a bajo las condiciones informadas por la institución.
+
+_______________________________
+Firma del padre/madre/tutor: ${tutor}
+
+_______________________________
+Aclaración y DNI
+
+_______________________________
+Firma y aclaración de la autoridad institucional
+
+
+Lugar y fecha: ______________________, ${fecha}`;
+  } else if(tipo === 'permiso'){
     texto =
 `SOLICITUD DE PERMISO
 
@@ -696,6 +932,9 @@ Firma testigo`;
   }
   $('#actaPreview').textContent = texto;
 }
+$('#actaTipo').addEventListener('change', ()=>{
+  $('#actaCamposAlumno').style.display = $('#actaTipo').value==='autorizacion' ? 'flex' : 'none';
+});
 $('#genActa').addEventListener('click', generarActa);
 $('#copyActa').addEventListener('click', ()=>{
   const txt = $('#actaPreview').textContent;
@@ -810,6 +1049,117 @@ function handleUserMsg(text){
 }
 $('#chatSend').addEventListener('click', ()=> handleUserMsg(chatInput.value));
 chatInput.addEventListener('keydown', e=>{ if(e.key==='Enter') handleUserMsg(chatInput.value); });
+
+/* ================= SINCRONIZACIÓN ENTRE DISPOSITIVOS (FIREBASE) ================= */
+let syncEnabled = false, applyingRemote = false, fbDocRef = null;
+
+function pushSync(){
+  if(!syncEnabled || applyingRemote || !fbDocRef) return;
+  fbDocRef.set({ cargos, eventos, tareas, propuestas, actualizado: Date.now() }).catch(err=>{
+    $('#syncStatus').textContent = 'Error al sincronizar: ' + err.message;
+  });
+}
+
+function aplicarDatosRemotos(data){
+  applyingRemote = true;
+  cargos = data.cargos || cargos;
+  eventos = data.eventos || eventos;
+  tareas = data.tareas || tareas;
+  propuestas = data.propuestas || propuestas;
+  localStorage.setItem('cargos', JSON.stringify(cargos));
+  localStorage.setItem('eventos', JSON.stringify(eventos));
+  localStorage.setItem('tareas', JSON.stringify(tareas));
+  localStorage.setItem('propuestas', JSON.stringify(propuestas));
+  renderRoster(); renderEventos(); renderTareas(); renderCalendario();
+  mostrarSeleccion(diaSeleccionado || isoToday());
+  renderPropuestas();
+  applyingRemote = false;
+}
+
+function loadFirebaseSDK(cb){
+  if(window.firebase && window.firebase.firestore){ cb(); return; }
+  const s1=document.createElement('script');
+  s1.src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js";
+  s1.onload=()=>{
+    const s2=document.createElement('script');
+    s2.src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js";
+    s2.onload=cb;
+    s2.onerror=()=>{ $('#syncStatus').textContent = 'No se pudo cargar Firebase (revisá tu conexión).'; };
+    document.head.appendChild(s2);
+  };
+  s1.onerror=()=>{ $('#syncStatus').textContent = 'No se pudo cargar Firebase (revisá tu conexión).'; };
+  document.head.appendChild(s1);
+}
+
+function conectarSync(config, code){
+  loadFirebaseSDK(()=>{
+    try{
+      if(!firebase.apps || !firebase.apps.length){ firebase.initializeApp(config); }
+      const db = firebase.firestore();
+      fbDocRef = db.collection('centros-estudiantes').doc(code);
+      fbDocRef.onSnapshot(doc=>{
+        if(doc.exists){
+          aplicarDatosRemotos(doc.data());
+          $('#syncStatus').textContent = '✓ Conectado y sincronizado con "' + code + '".';
+        } else {
+          syncEnabled = true;
+          pushSync();
+          $('#syncStatus').textContent = '✓ Conectado. Se creó "' + code + '" con tus datos actuales.';
+        }
+        syncEnabled = true;
+      }, err=>{
+        $('#syncStatus').textContent = 'Error de conexión: ' + err.message;
+      });
+      localStorage.setItem('syncConfig', JSON.stringify(config));
+      localStorage.setItem('syncCode', code);
+    }catch(err){
+      $('#syncStatus').textContent = 'La configuración pegada no es válida: ' + err.message;
+    }
+  });
+}
+
+$('#syncOpenBtn').addEventListener('click', ()=>{
+  $('#syncOverlay').classList.add('open');
+  const savedConfig = localStorage.getItem('syncConfig');
+  const savedCode = localStorage.getItem('syncCode');
+  if(savedConfig) $('#syncConfig').value = savedConfig;
+  if(savedCode) $('#syncCode').value = savedCode;
+});
+$('#syncClose').addEventListener('click', ()=> $('#syncOverlay').classList.remove('open'));
+$('#syncOverlay').addEventListener('click', e=>{ if(e.target.id==='syncOverlay') $('#syncOverlay').classList.remove('open'); });
+
+$('#syncConnect').addEventListener('click', ()=>{
+  const raw = $('#syncConfig').value.trim();
+  const code = $('#syncCode').value.trim();
+  if(!raw || !code){ $('#syncStatus').textContent = 'Pegá la configuración de Firebase y elegí un código.'; return; }
+  let config;
+  try{
+    config = Function('"use strict"; return (' + raw + ')')();
+  }catch(err){
+    $('#syncStatus').textContent = 'No pude leer la configuración pegada. Revisá que sea el objeto tal cual lo da Firebase.';
+    return;
+  }
+  $('#syncStatus').textContent = 'Conectando...';
+  conectarSync(config, code);
+});
+
+$('#syncDisconnect').addEventListener('click', ()=>{
+  syncEnabled = false;
+  fbDocRef = null;
+  localStorage.removeItem('syncConfig');
+  localStorage.removeItem('syncCode');
+  $('#syncConfig').value=''; $('#syncCode').value='';
+  $('#syncStatus').textContent = 'Desconectado. Los datos vuelven a guardarse solo en este dispositivo.';
+});
+
+// Reconexión automática si ya había una config guardada
+(function(){
+  const savedConfig = localStorage.getItem('syncConfig');
+  const savedCode = localStorage.getItem('syncCode');
+  if(savedConfig && savedCode){
+    try{ conectarSync(JSON.parse(savedConfig), savedCode); }catch(e){}
+  }
+})();
 </script>
 </body>
 </html>
