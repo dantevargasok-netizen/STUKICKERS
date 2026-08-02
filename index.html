@@ -86,19 +86,42 @@
     margin-bottom:30px;
     position:relative;overflow:hidden;
   }
-  .hero::after{
-    content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;
-    background:radial-gradient(circle,rgba(242,183,5,0.20),transparent 70%);
-  }
+  .hero-foto{align-items:stretch;padding:0;overflow:hidden;}
+  .hero-foto::after{display:none;}
   .hero h1{font-size:38px;color:var(--paper);}
   .hero .sub{color:var(--ink-dim);margin-top:8px;font-size:15px;}
   .countdown{
     background:var(--pink);color:#12151c;border-radius:16px;padding:18px 26px;
-    text-align:center;min-width:170px;transform:rotate(-2deg);
+    text-align:center;min-width:170px;
     box-shadow:0 10px 26px -8px rgba(242,183,5,0.45);
   }
   .countdown .num{font-family:'Anton',sans-serif;font-size:48px;line-height:1;}
   .countdown .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-top:4px;}
+  .hero-info{padding:36px 40px;display:flex;flex-direction:column;justify-content:center;gap:18px;flex:1;min-width:260px;}
+  .hero-info .countdown{align-self:flex-start;}
+  .hero-carousel{
+    position:relative;flex:1;min-width:280px;max-width:440px;background:var(--surface2);
+    display:flex;flex-direction:column;
+  }
+  .carousel-view{flex:1;position:relative;min-height:220px;overflow:hidden;}
+  .carousel-view img{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s ease;
+  }
+  .carousel-view img.active{opacity:1;}
+  .carousel-empty{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;
+    color:var(--muted);font-size:13px;padding:30px;
+  }
+  .carousel-dots{position:absolute;bottom:56px;left:0;right:0;display:flex;justify-content:center;gap:6px;z-index:2;}
+  .carousel-dots span{width:7px;height:7px;border-radius:50%;background:rgba(241,236,221,.35);}
+  .carousel-dots span.active{background:var(--pink);}
+  .carousel-controls{display:flex;gap:8px;padding:12px;background:var(--surface);border-top:1px solid var(--line);}
+  .carousel-controls .btn{flex:1;text-align:center;font-size:12px;padding:8px 10px;}
+  .carousel-upload{display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  @media(max-width:800px){
+    .hero-foto{flex-direction:column;}
+    .hero-carousel{max-width:none;}
+  }
 
   .section-title{display:flex;align-items:center;gap:12px;margin:34px 0 16px;}
   .section-title h2{font-size:22px;color:var(--paper);}
@@ -150,7 +173,7 @@
   @media(max-width:900px){.grid2{grid-template-columns:1fr;}}
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;}
   .addform{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-  .addform input,.addform select{flex:1;min-width:120px;background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:9px 12px;border-radius:8px;font-size:13px;}
+  .addform input,.addform select,.addform textarea{flex:1;min-width:120px;background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:9px 12px;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;}
   .btn{background:var(--pink);border:none;color:#12151c;font-weight:700;padding:9px 18px;border-radius:8px;font-size:13px;}
   .btn.alt{background:var(--teal);}
   .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink-dim);}
@@ -283,7 +306,74 @@
   .chat-quick{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px;}
   .chat-quick button{background:var(--surface2);border:1px solid var(--line);color:var(--ink-dim);font-size:11px;padding:5px 10px;border-radius:20px;}
 
+  .notas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+  .nota-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;display:flex;flex-direction:column;gap:8px;position:relative;
+    border-top:3px solid var(--pink);
+  }
+  .nota-card .n-titulo{font-weight:700;font-size:15px;color:var(--paper);word-break:break-word;}
+  .nota-card .n-cuerpo{font-size:13.5px;color:var(--ink-dim);white-space:pre-wrap;word-break:break-word;flex:1;}
+  .nota-card .n-fecha{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+  .nota-card .n-acciones{display:flex;gap:8px;margin-top:6px;}
+  .nota-card .n-acciones button{background:transparent;border:1px solid var(--line);color:var(--ink-dim);padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;}
+  .nota-card .n-acciones button:hover{border-color:var(--pink);color:var(--pink);}
+  .nota-card textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px;font-size:13px;resize:vertical;}
+  .nota-card input.n-edit-titulo{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 9px;font-size:14px;font-weight:700;}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0;}
+  .stat-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 16px;
+    text-align:center;border-top:3px solid var(--pink);
+  }
+  .stat-card.warn{border-top-color:var(--yellow);}
+  .stat-card.teal{border-top-color:var(--teal);}
+  .stat-num{font-family:'Anton',sans-serif;font-size:32px;color:var(--paper);}
+  .stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px;}
+  @media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+
+  .inicio-grid2{margin-bottom:20px;}
+  .panel-h{font-size:14px;color:var(--paper);margin-bottom:14px;}
+
+  .rank-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .rank-item:last-child{border-bottom:none;}
+  .rank-pos{
+    width:26px;height:26px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;
+    justify-content:center;font-size:12px;font-weight:700;color:var(--ink-dim);flex-shrink:0;
+  }
+  .rank-item:nth-child(1) .rank-pos{background:var(--pink);color:#12151c;}
+  .rank-item:nth-child(2) .rank-pos{background:#c9cddc;color:#12151c;}
+  .rank-item:nth-child(3) .rank-pos{background:#c98a4b;color:#12151c;}
+  .rank-info{flex:1;min-width:0;}
+  .rank-info .r-nombre{font-size:13.5px;font-weight:700;color:var(--paper);}
+  .rank-info .r-puesto{font-size:11px;color:var(--muted);}
+  .rank-stars{font-size:13px;color:var(--yellow);white-space:nowrap;}
+
+  .mini-ev{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .mini-ev:last-child{border-bottom:none;}
+  .mini-ev .sw{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .mini-ev .d{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);min-width:44px;}
+  .mini-tarea{font-size:14px;background:var(--surface2);border-radius:10px;padding:12px 14px;border-left:3px solid var(--teal);}
+  .mini-tarea .t-fecha{font-size:11px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace;}
+
+  .redes-panel{margin-bottom:20px;}
+  .redes-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  .red-chip{
+    display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--line);
+    border-radius:30px;padding:9px 16px;font-size:13px;font-weight:600;text-decoration:none;color:var(--ink);
+  }
+  .red-chip:hover{border-color:var(--pink);color:var(--pink);}
+
+  .frase-panel{
+    background:linear-gradient(135deg,var(--surface2),var(--surface));border:1px solid var(--line);
+    border-radius:16px;padding:26px 30px;text-align:center;margin-bottom:10px;
+  }
+  .frase-texto{font-family:'Anton',sans-serif;font-size:19px;color:var(--paper);letter-spacing:.3px;
+    line-height:1.4;text-transform:none;margin-bottom:14px;}
+  .frase-texto::before{content:"“";}
+  .frase-texto::after{content:"”";}
   .empty{color:var(--muted);font-size:13px;padding:14px 0;}
+
+
   label.small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;}
   .field{display:flex;flex-direction:column;flex:1;min-width:130px;}
 
@@ -327,7 +417,9 @@
     <div class="brand">CENTRO</div>
     <div class="navlist">
       <button class="navbtn active" data-view="inicio"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Inicio</button>
+      <button class="navbtn" data-view="equipo"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="8" r="2.5"/><path d="M2 21v-2a5 5 0 015-5h4a5 5 0 015 5v2M16 13.5a4 4 0 013.5 4.5v3"/></svg>Equipo</button>
       <button class="navbtn" data-view="calendario"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agenda</button>
+      <button class="navbtn" data-view="notas"><svg viewBox="0 0 24 24"><path d="M4 3h16v14l-4 4H4z"/><path d="M14 21v-4h4M8 8h8M8 12h8M8 16h4"/></svg>Notas</button>
       <button class="navbtn" data-view="propuestas"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Propuestas</button>
       <button class="navbtn" data-view="ayuda"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 115.8 1c0 2-3 2-3 4M12 17h.01"/></svg>Ayuda</button>
       <button class="navbtn" data-view="actas"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 15h6M9 11h6"/></svg>Actas</button>
@@ -339,17 +431,99 @@
 
     <!-- INICIO -->
     <div class="view active" id="view-inicio">
-      <div class="hero">
-        <div>
+      <div class="hero hero-foto">
+        <div class="hero-info">
           <h1 id="saludo">Hola Tomás</h1>
           <div class="sub" id="fechaHoy"></div>
+          <div class="countdown">
+            <div class="num" id="diasFaltan">--</div>
+            <div class="lbl">días para<br>las elecciones</div>
+          </div>
         </div>
-        <div class="countdown">
-          <div class="num" id="diasFaltan">--</div>
-          <div class="lbl">días para<br>las elecciones</div>
+        <div class="hero-carousel">
+          <div class="carousel-view" id="carouselView">
+            <div class="carousel-empty" id="carouselEmpty">Agregá fotos del centro para personalizar esta pantalla</div>
+          </div>
+          <div class="carousel-dots" id="carouselDots"></div>
+          <div class="carousel-controls">
+            <label class="btn ghost carousel-upload">
+              + Agregar fotos
+              <input type="file" id="fotoInput" accept="image/*" multiple style="display:none;">
+            </label>
+            <button class="btn ghost" id="fotoQuitar">Quitar actual</button>
+          </div>
         </div>
       </div>
 
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="statOcupados">0</div>
+          <div class="stat-lbl">Cargos ocupados</div>
+        </div>
+        <div class="stat-card warn">
+          <div class="stat-num" id="statVacantes">0</div>
+          <div class="stat-lbl">Cargos vacantes</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-num" id="statPropuestas">0/0</div>
+          <div class="stat-lbl">Propuestas cumplidas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statTareas">0</div>
+          <div class="stat-lbl">Tareas pendientes</div>
+        </div>
+      </div>
+
+      <div class="grid2 inicio-grid2">
+        <div class="panel">
+          <h3 class="panel-h">🏆 Ranking de confianza</h3>
+          <div id="rankingList"></div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-h">📅 Próximos eventos</h3>
+          <div id="proximosEventos"></div>
+          <h3 class="panel-h" style="margin-top:20px;">✅ Próxima tarea pendiente</h3>
+          <div id="proximaTarea"></div>
+        </div>
+      </div>
+
+      <div class="panel redes-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <h3 class="panel-h" style="margin:0;">🔗 Nuestras redes</h3>
+          <button class="btn ghost" id="redesEditBtn">Editar redes</button>
+        </div>
+        <div class="redes-list" id="redesList"></div>
+      </div>
+
+      <div class="frase-panel">
+        <div class="frase-texto" id="fraseTexto"></div>
+        <button class="btn ghost" id="fraseBtn">Otra frase</button>
+      </div>
+    </div>
+
+    <!-- MODAL REDES -->
+    <div class="sync-overlay" id="redesOverlay">
+      <div class="sync-modal">
+        <div class="sync-head">
+          <h3>Editar redes del centro</h3>
+          <button class="sync-close" id="redesClose">✕</button>
+        </div>
+        <label class="small">Instagram (link completo)</label>
+        <input type="text" id="redesInstagram" placeholder="https://instagram.com/tucentro">
+        <label class="small" style="margin-top:10px;">TikTok</label>
+        <input type="text" id="redesTiktok" placeholder="https://tiktok.com/@tucentro">
+        <label class="small" style="margin-top:10px;">Grupo de WhatsApp</label>
+        <input type="text" id="redesWhatsapp" placeholder="https://chat.whatsapp.com/...">
+        <label class="small" style="margin-top:10px;">Email de contacto</label>
+        <input type="text" id="redesEmail" placeholder="centrodeestudiantes@mail.com">
+        <label class="small" style="margin-top:10px;">Otro link (opcional)</label>
+        <input type="text" id="redesOtro" placeholder="https://...">
+        <button class="btn" id="redesGuardar" style="margin-top:14px;width:100%;">Guardar redes</button>
+      </div>
+    </div>
+
+    <!-- EQUIPO -->
+    <div class="view" id="view-equipo">
       <div class="section-title"><h2>Equipo del Centro</h2><span class="stamp">CARGOS · 25 SEP</span></div>
       <div class="summary-row">
         <div class="chip ok"><span class="dot"></span> <span id="cntOcupados">0</span> ocupados</div>
@@ -418,6 +592,21 @@
         </div>
       </div>
       <div id="listaPropuestas"></div>
+    </div>
+
+    <!-- NOTAS -->
+    <div class="view" id="view-notas">
+      <div class="section-title"><h2>Notas</h2><span class="stamp" id="notasCount">0 notas</span></div>
+      <div class="panel" style="margin-bottom:18px;">
+        <div class="addform">
+          <div class="field" style="flex:2"><label class="small">Título</label><input type="text" id="notaTitulo" placeholder="Ej: Ideas para el acto"></div>
+        </div>
+        <div class="addform">
+          <div class="field" style="flex:3"><label class="small">Contenido</label><textarea id="notaContenido" rows="3" placeholder="Escribí acá tu nota..."></textarea></div>
+        </div>
+        <button class="btn" id="addNota">Agregar nota</button>
+      </div>
+      <div class="notas-grid" id="notasGrid"></div>
     </div>
 
     <!-- AYUDA -->
@@ -555,6 +744,7 @@ function cargosIniciales(){
   return PUESTOS_BASE.map(p=>({id:uid(),puesto:p,nombre:'',curso:'',telefono:'',rating:0,esAyudante:false}));
 }
 let cargos = load('cargos', null);
+let eventos = [], tareas = [], propuestas = [], notas = [], redes = {instagram:'',tiktok:'',whatsapp:'',email:'',otro:''};
 if(!cargos){ cargos = cargosIniciales(); save('cargos',cargos); }
 
 function renderRoster(){
@@ -570,6 +760,7 @@ function renderRoster(){
   const rVa = $('#rosterVacantes'); rVa.innerHTML='';
   if(vacantes.length===0) rVa.innerHTML = '<div class="empty">No hay cargos vacantes 🎉</div>';
   vacantes.forEach(c=> rVa.appendChild(cardEl(c)));
+  renderInicioExtra();
 }
 
 function starsHTML(c){
@@ -636,9 +827,74 @@ $('#addAyudanteBtn').addEventListener('click', ()=>{
 
 renderRoster();
 
+/* ================= CARRUSEL DE FOTOS (INICIO) ================= */
+let fotos = load('fotosInicio', []);
+let fotoActual = 0, carruselTimer = null;
+
+function renderCarrusel(){
+  const view = $('#carouselView');
+  const dots = $('#carouselDots');
+  view.innerHTML=''; dots.innerHTML='';
+  if(fotos.length===0){
+    view.innerHTML = '<div class="carousel-empty" id="carouselEmpty">Agregá fotos del centro para personalizar esta pantalla</div>';
+    return;
+  }
+  if(fotoActual>=fotos.length) fotoActual = 0;
+  fotos.forEach((src,i)=>{
+    const img = document.createElement('img');
+    img.src = src;
+    if(i===fotoActual) img.classList.add('active');
+    view.appendChild(img);
+    const dot = document.createElement('span');
+    if(i===fotoActual) dot.classList.add('active');
+    dot.addEventListener('click', ()=>{ fotoActual=i; renderCarrusel(); reiniciarTimer(); });
+    dots.appendChild(dot);
+  });
+}
+function siguienteFoto(){
+  if(fotos.length===0) return;
+  fotoActual = (fotoActual+1) % fotos.length;
+  renderCarrusel();
+}
+function reiniciarTimer(){
+  clearInterval(carruselTimer);
+  if(fotos.length>1) carruselTimer = setInterval(siguienteFoto, 4500);
+}
+$('#fotoInput').addEventListener('change', e=>{
+  const files = Array.from(e.target.files);
+  let pendientes = files.length;
+  if(pendientes===0) return;
+  files.forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      fotos.push(ev.target.result);
+      pendientes--;
+      if(pendientes===0){
+        save('fotosInicio', fotos); // se guarda solo local (no ocupa el sync)
+        localStorage.setItem('fotosInicio', JSON.stringify(fotos));
+        fotoActual = fotos.length-1;
+        renderCarrusel();
+        reiniciarTimer();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value='';
+});
+$('#fotoQuitar').addEventListener('click', ()=>{
+  if(fotos.length===0) return;
+  fotos.splice(fotoActual,1);
+  localStorage.setItem('fotosInicio', JSON.stringify(fotos));
+  fotoActual = 0;
+  renderCarrusel();
+  reiniciarTimer();
+});
+renderCarrusel();
+reiniciarTimer();
+
 /* ================= CALENDARIO / TAREAS ================= */
-let eventos = load('eventos', []);
-let tareas = load('tareas', []);
+eventos = load('eventos', []);
+tareas = load('tareas', []);
 
 function fmtFechaCorta(iso){
   if(!iso) return '';
@@ -649,7 +905,7 @@ function fmtFechaCorta(iso){
 function renderEventos(){
   const cont = $('#listaEventos'); cont.innerHTML='';
   const ordenados = [...eventos].sort((a,b)=> a.fecha.localeCompare(b.fecha));
-  if(ordenados.length===0){ cont.innerHTML='<div class="empty">No hay fechas cargadas todavía.</div>'; return; }
+  if(ordenados.length===0){ cont.innerHTML='<div class="empty">No hay fechas cargadas todavía.</div>'; renderInicioExtra(); return; }
   ordenados.forEach(ev=>{
     const el = document.createElement('div');
     el.className='event-item';
@@ -661,6 +917,7 @@ function renderEventos(){
     });
     cont.appendChild(el);
   });
+  renderInicioExtra();
 }
 
 /* ---- Calendario visual ---- */
@@ -732,7 +989,7 @@ $('#calNext').addEventListener('click', ()=>{ calMes = new Date(calMes.getFullYe
 function renderTareas(){
   const cont = $('#listaTareas'); cont.innerHTML='';
   const ordenadas = [...tareas].sort((a,b)=> (a.fecha||'').localeCompare(b.fecha||''));
-  if(ordenadas.length===0){ cont.innerHTML='<div class="empty">No hay tareas cargadas todavía.</div>'; return; }
+  if(ordenadas.length===0){ cont.innerHTML='<div class="empty">No hay tareas cargadas todavía.</div>'; renderInicioExtra(); return; }
   ordenadas.forEach(t=>{
     const el = document.createElement('div');
     el.className='task-item'+(t.hecha?' done':'');
@@ -746,6 +1003,7 @@ function renderTareas(){
     });
     cont.appendChild(el);
   });
+  renderInicioExtra();
 }
 $('#addEvento').addEventListener('click', ()=>{
   const fecha = $('#evFecha').value, titulo = $('#evTitulo').value.trim(), color = $('#evColor').value;
@@ -768,7 +1026,7 @@ $('#addTarea').addEventListener('click', ()=>{
 renderEventos(); renderTareas(); renderCalendario(); mostrarSeleccion(isoToday());
 
 /* ================= PROPUESTAS ================= */
-let propuestas = load('propuestas', []);
+propuestas = load('propuestas', []);
 function renderPropuestas(){
   const cont = $('#listaPropuestas'); cont.innerHTML='';
   if(propuestas.length===0){ cont.innerHTML='<div class="empty">Todavía no cargaste propuestas de campaña.</div>'; }
@@ -789,6 +1047,7 @@ function renderPropuestas(){
   });
   const hechas = propuestas.filter(p=>p.hecha).length;
   $('#propProgreso').textContent = `${hechas}/${propuestas.length} cumplidas`;
+  renderInicioExtra();
 }
 $('#addPropuesta').addEventListener('click', ()=>{
   const texto = $('#propTexto').value.trim();
@@ -799,6 +1058,190 @@ $('#addPropuesta').addEventListener('click', ()=>{
   renderPropuestas();
 });
 renderPropuestas();
+
+/* ================= NOTAS ================= */
+notas = load('notas', []);
+SYNC_KEYS.push('notas');
+
+function fmtFechaHora(ts){
+  const d = new Date(ts);
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function renderNotas(){
+  const cont = $('#notasGrid'); cont.innerHTML='';
+  $('#notasCount').textContent = notas.length + (notas.length===1?' nota':' notas');
+  const ordenadas = [...notas].sort((a,b)=> (b.actualizado||0)-(a.actualizado||0));
+  if(ordenadas.length===0){ cont.innerHTML = '<div class="empty">Todavía no cargaste ninguna nota.</div>'; return; }
+  ordenadas.forEach(n=>{
+    const el = document.createElement('div');
+    el.className='nota-card';
+    el.innerHTML = `
+      <div class="n-titulo" data-view>${n.titulo || 'Sin título'}</div>
+      <div class="n-cuerpo" data-view>${n.contenido || ''}</div>
+      <div class="n-fecha">${fmtFechaHora(n.actualizado||Date.now())}</div>
+      <div class="n-acciones">
+        <button class="edit">Editar</button>
+        <button class="del">Eliminar</button>
+      </div>
+    `;
+    el.querySelector('.edit').addEventListener('click', ()=>{
+      const enEdicion = el.querySelector('.n-edit-titulo');
+      if(enEdicion){ return; } // ya está en modo edición
+      el.querySelector('[data-view].n-titulo').outerHTML = `<input type="text" class="n-edit-titulo" value="${(n.titulo||'').replace(/"/g,'&quot;')}">`;
+      el.querySelector('.n-cuerpo').outerHTML = `<textarea class="n-edit-cuerpo" rows="4">${n.contenido||''}</textarea>`;
+      el.querySelector('.edit').textContent = 'Guardar';
+      const nuevoEdit = el.querySelector('.edit');
+      nuevoEdit.replaceWith(nuevoEdit.cloneNode(true));
+      el.querySelector('.edit').addEventListener('click', ()=>{
+        n.titulo = el.querySelector('.n-edit-titulo').value.trim();
+        n.contenido = el.querySelector('.n-edit-cuerpo').value.trim();
+        n.actualizado = Date.now();
+        save('notas',notas);
+        renderNotas();
+      });
+    });
+    el.querySelector('.del').addEventListener('click', ()=>{
+      notas = notas.filter(x=>x.id!==n.id);
+      save('notas',notas);
+      renderNotas();
+    });
+    cont.appendChild(el);
+  });
+}
+$('#addNota').addEventListener('click', ()=>{
+  const titulo = $('#notaTitulo').value.trim();
+  const contenido = $('#notaContenido').value.trim();
+  if(!titulo && !contenido) return;
+  notas.push({id:uid(), titulo, contenido, actualizado:Date.now()});
+  save('notas',notas);
+  $('#notaTitulo').value=''; $('#notaContenido').value='';
+  renderNotas();
+});
+renderNotas();
+
+/* ================= INICIO ENRIQUECIDO ================= */
+function renderInicioExtra(){
+  // Estadísticas
+  const ocupados = cargos.filter(c=>c.nombre.trim()!=='').length;
+  const vacantes = cargos.length - ocupados;
+  const propCumplidas = propuestas.filter(p=>p.hecha).length;
+  const tareasPendientes = tareas.filter(t=>!t.hecha).length;
+  $('#statOcupados').textContent = ocupados;
+  $('#statVacantes').textContent = vacantes;
+  $('#statPropuestas').textContent = `${propCumplidas}/${propuestas.length}`;
+  $('#statTareas').textContent = tareasPendientes;
+
+  // Ranking de confianza
+  const rk = $('#rankingList');
+  const rankeados = cargos.filter(c=>c.nombre.trim()!=='' && c.rating>0).sort((a,b)=>b.rating-a.rating).slice(0,6);
+  if(rankeados.length===0){
+    rk.innerHTML = '<div class="empty">Todavía no cargaste reseñas con estrellas. Andá a "Equipo" y calificá a tu equipo.</div>';
+  } else {
+    rk.innerHTML = rankeados.map((c,i)=>`
+      <div class="rank-item">
+        <div class="rank-pos">${i+1}</div>
+        <div class="rank-info">
+          <div class="r-nombre">${c.nombre}</div>
+          <div class="r-puesto">${c.puesto}</div>
+        </div>
+        <div class="rank-stars">${'★'.repeat(c.rating)}${'☆'.repeat(5-c.rating)}</div>
+      </div>`).join('');
+  }
+
+  // Próximos eventos
+  const pe = $('#proximosEventos');
+  const proximos = eventos.filter(e=>e.fecha>=isoToday()).sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(0,4);
+  if(proximos.length===0){
+    pe.innerHTML = '<div class="empty">No tenés fechas próximas cargadas.</div>';
+  } else {
+    pe.innerHTML = proximos.map(e=>`
+      <div class="mini-ev">
+        <span class="sw" style="background:${e.color||'#f2b705'}"></span>
+        <span class="d">${fmtFechaCorta(e.fecha)}</span> ${e.titulo}
+      </div>`).join('');
+  }
+
+  // Próxima tarea pendiente
+  const pt = $('#proximaTarea');
+  const pendientes = tareas.filter(t=>!t.hecha).sort((a,b)=> (a.fecha||'9999').localeCompare(b.fecha||'9999'));
+  if(pendientes.length===0){
+    pt.innerHTML = '<div class="empty">No tenés tareas pendientes. 🎉</div>';
+  } else {
+    const t = pendientes[0];
+    pt.innerHTML = `<div class="mini-tarea">${t.texto}${t.fecha?`<div class="t-fecha">Vence: ${fmtFechaCorta(t.fecha)}</div>`:''}</div>`;
+  }
+}
+
+/* Redes del centro */
+redes = load('redes', {instagram:'',tiktok:'',whatsapp:'',email:'',otro:''});
+SYNC_KEYS.push('redes');
+
+const REDES_META = {
+  instagram:{icono:'📷',label:'Instagram'},
+  tiktok:{icono:'🎵',label:'TikTok'},
+  whatsapp:{icono:'💬',label:'WhatsApp'},
+  email:{icono:'✉️',label:'Email'},
+  otro:{icono:'🔗',label:'Más info'},
+};
+function renderRedes(){
+  const cont = $('#redesList');
+  const activas = Object.keys(REDES_META).filter(k=>redes[k] && redes[k].trim()!=='');
+  if(activas.length===0){
+    cont.innerHTML = '<div class="empty">Todavía no cargaste las redes del centro. Tocá "Editar redes".</div>';
+    return;
+  }
+  cont.innerHTML = activas.map(k=>{
+    const val = redes[k].trim();
+    const href = k==='email' ? (val.includes('@')?'mailto:'+val:val) : val;
+    return `<a class="red-chip" href="${href}" target="_blank" rel="noopener">${REDES_META[k].icono} ${REDES_META[k].label}</a>`;
+  }).join('');
+}
+$('#redesEditBtn').addEventListener('click', ()=>{
+  $('#redesInstagram').value = redes.instagram||'';
+  $('#redesTiktok').value = redes.tiktok||'';
+  $('#redesWhatsapp').value = redes.whatsapp||'';
+  $('#redesEmail').value = redes.email||'';
+  $('#redesOtro').value = redes.otro||'';
+  $('#redesOverlay').classList.add('open');
+});
+$('#redesClose').addEventListener('click', ()=> $('#redesOverlay').classList.remove('open'));
+$('#redesOverlay').addEventListener('click', e=>{ if(e.target.id==='redesOverlay') $('#redesOverlay').classList.remove('open'); });
+$('#redesGuardar').addEventListener('click', ()=>{
+  redes = {
+    instagram: $('#redesInstagram').value.trim(),
+    tiktok: $('#redesTiktok').value.trim(),
+    whatsapp: $('#redesWhatsapp').value.trim(),
+    email: $('#redesEmail').value.trim(),
+    otro: $('#redesOtro').value.trim(),
+  };
+  save('redes', redes);
+  renderRedes();
+  $('#redesOverlay').classList.remove('open');
+});
+renderRedes();
+
+/* Frase motivadora sobre el centro de estudiantes */
+const FRASES_CENTRO = [
+  "Un centro de estudiantes fuerte no lo hace una sola persona, lo hace un equipo que no afloja.",
+  "Cada cargo ocupado es una promesa cumplida. Cada vacante, una oportunidad de sumar a alguien más.",
+  "Organizar, escuchar y sostener: eso también es liderar.",
+  "Las mejores propuestas nacen de escuchar a quienes representamos.",
+  "El cambio en la escuela empieza por los que se animan a ocupar un espacio y sostenerlo.",
+  "No hace falta tener todas las respuestas, alcanza con no dejar de intentarlo.",
+  "Representar es un compromiso diario, no solo una campaña.",
+  "Un centro de estudiantes que escucha, construye comunidad.",
+  "La constancia de hoy es lo que se recuerda mañana como gestión.",
+  "Entre todos se sostiene lo que uno solo no puede.",
+];
+function mostrarFrase(){
+  const f = FRASES_CENTRO[Math.floor(Math.random()*FRASES_CENTRO.length)];
+  $('#fraseTexto').textContent = f;
+}
+$('#fraseBtn').addEventListener('click', mostrarFrase);
+mostrarFrase();
+
+renderInicioExtra();
 
 /* ================= AYUDA ================= */
 const AYUDA_OPCIONES = [
@@ -1055,7 +1498,7 @@ let syncEnabled = false, applyingRemote = false, fbDocRef = null;
 
 function pushSync(){
   if(!syncEnabled || applyingRemote || !fbDocRef) return;
-  fbDocRef.set({ cargos, eventos, tareas, propuestas, actualizado: Date.now() }).catch(err=>{
+  fbDocRef.set({ cargos, eventos, tareas, propuestas, notas, redes, actualizado: Date.now() }).catch(err=>{
     $('#syncStatus').textContent = 'Error al sincronizar: ' + err.message;
   });
 }
@@ -1066,13 +1509,19 @@ function aplicarDatosRemotos(data){
   eventos = data.eventos || eventos;
   tareas = data.tareas || tareas;
   propuestas = data.propuestas || propuestas;
+  notas = data.notas || notas;
+  redes = data.redes || redes;
   localStorage.setItem('cargos', JSON.stringify(cargos));
   localStorage.setItem('eventos', JSON.stringify(eventos));
   localStorage.setItem('tareas', JSON.stringify(tareas));
   localStorage.setItem('propuestas', JSON.stringify(propuestas));
+  localStorage.setItem('notas', JSON.stringify(notas));
+  localStorage.setItem('redes', JSON.stringify(redes));
   renderRoster(); renderEventos(); renderTareas(); renderCalendario();
   mostrarSeleccion(diaSeleccionado || isoToday());
   renderPropuestas();
+  renderNotas();
+  renderRedes();
   applyingRemote = false;
 }
 
