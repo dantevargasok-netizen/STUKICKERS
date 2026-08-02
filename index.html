@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro de Estudiantes — Panel de Gestión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12151c;
+    --surface:#1b202a;
+    --surface2:#232a36;
+    --paper:#f1ecdd;
+    --paper-dim:#e4ddc8;
+    --ink:#f1ecdd;
+    --ink-dim:#aeb4c2;
+    --muted:#6d7688;
+    --pink:#ff3d77;
+    --teal:#35d0ba;
+    --yellow:#f4c93e;
+    --line:#2c3341;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Space Grotesk',sans-serif;
+    min-height:100vh;
+    background-image:
+      radial-gradient(circle at 15% 8%, rgba(255,61,119,0.08), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(53,208,186,0.07), transparent 40%);
+  }
+  h1,h2,h3,h4{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:0.5px;text-transform:uppercase;margin:0;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--pink);color:#12151c;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  input,textarea,select{font-family:inherit;}
+
+  /* LAYOUT */
+  .app{display:flex;min-height:100vh;}
+  .sidebar{
+    width:88px;
+    background:var(--surface);
+    border-right:1px solid var(--line);
+    display:flex;flex-direction:column;align-items:center;
+    padding:22px 0;
+    position:sticky;top:0;height:100vh;
+    flex-shrink:0;
+    z-index:20;
+  }
+  .brand{
+    writing-mode:vertical-rl;
+    font-family:'Anton',sans-serif;
+    font-size:22px;
+    letter-spacing:3px;
+    color:var(--pink);
+    margin-bottom:36px;
+    transform:rotate(180deg);
+  }
+  .navlist{display:flex;flex-direction:column;gap:6px;width:100%;align-items:center;flex:1;}
+  .navbtn{
+    width:64px;height:64px;border-radius:12px;background:transparent;border:none;
+    color:var(--ink-dim);display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:4px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;transition:all .15s ease;
+  }
+  .navbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;}
+  .navbtn:hover{background:var(--surface2);color:var(--ink);}
+  .navbtn.active{background:var(--pink);color:#12151c;font-weight:700;}
+
+  .main{flex:1;padding:36px 44px 120px;max-width:1200px;}
+  .view{display:none;animation:fadein .25s ease;}
+  .view.active{display:block;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  /* HERO / INICIO */
+  .hero{
+    background:linear-gradient(135deg,var(--surface2),var(--surface));
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:36px 40px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;
+    margin-bottom:30px;
+    position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;
+    background:radial-gradient(circle,rgba(255,61,119,0.18),transparent 70%);
+  }
+  .hero h1{font-size:38px;color:var(--paper);}
+  .hero .sub{color:var(--ink-dim);margin-top:8px;font-size:15px;}
+  .countdown{
+    background:var(--pink);color:#12151c;border-radius:16px;padding:18px 26px;
+    text-align:center;min-width:170px;transform:rotate(-2deg);
+    box-shadow:0 10px 26px -8px rgba(255,61,119,0.5);
+  }
+  .countdown .num{font-family:'Anton',sans-serif;font-size:48px;line-height:1;}
+  .countdown .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-top:4px;}
+
+  .section-title{display:flex;align-items:center;gap:12px;margin:34px 0 16px;}
+  .section-title h2{font-size:22px;color:var(--paper);}
+  .section-title .stamp{
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);
+    border:1px solid var(--line);padding:3px 8px;border-radius:20px;letter-spacing:1px;
+  }
+
+  .summary-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:8px;}
+  .chip{
+    padding:10px 16px;border-radius:30px;font-size:13px;font-weight:600;
+    display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);
+  }
+  .chip.ok{color:var(--teal);}
+  .chip.warn{color:var(--yellow);}
+  .dot{width:8px;height:8px;border-radius:50%;background:currentColor;}
+
+  .roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:16px;}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;transition:.15s ease;position:relative;
+  }
+  .card:hover{border-color:var(--pink);transform:translateY(-2px);}
+  .card.vacante{border-style:dashed;opacity:.85;}
+  .card .puesto{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);font-weight:700;margin-bottom:6px;}
+  .card .nombre{font-size:18px;font-weight:700;color:var(--paper);}
+  .card .meta{display:flex;gap:14px;margin-top:8px;font-size:13px;color:var(--ink-dim);flex-wrap:wrap;}
+  .card .meta span{display:flex;align-items:center;gap:5px;}
+  .stars{display:flex;gap:3px;margin-top:10px;}
+  .star{cursor:pointer;font-size:17px;color:var(--line);transition:color .1s;user-select:none;}
+  .star.filled{color:var(--yellow);}
+  .badge-vac{
+    position:absolute;top:14px;right:14px;background:var(--pink);color:#12151c;font-size:10px;
+    font-weight:700;text-transform:uppercase;padding:3px 9px;border-radius:20px;letter-spacing:.5px;
+  }
+  .card .editbtn{
+    margin-top:12px;background:transparent;border:1px solid var(--line);color:var(--ink-dim);
+    padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;
+  }
+  .card .editbtn:hover{border-color:var(--teal);color:var(--teal);}
+  .edit-form{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);gap:8px;flex-direction:column;}
+  .edit-form.open{display:flex;}
+  .edit-form input{background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 10px;font-size:13px;}
+  .edit-form .row{display:flex;gap:8px;}
+  .edit-form button{background:var(--teal);color:#12151c;border:none;padding:8px;border-radius:8px;font-weight:700;font-size:12px;}
+
+  /* CALENDAR / TASKS */
+  .grid2{display:grid;grid-template-columns:1.3fr 1fr;gap:22px;align-items:start;}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr;}}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;}
+  .addform{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .addform input,.addform select{flex:1;min-width:120px;background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:9px 12px;border-radius:8px;font-size:13px;}
+  .btn{background:var(--pink);border:none;color:#12151c;font-weight:700;padding:9px 18px;border-radius:8px;font-size:13px;}
+  .btn.alt{background:var(--teal);}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink-dim);}
+  .event-item,.task-item{
+    display:flex;justify-content:space-between;align-items:center;padding:12px 14px;
+    background:var(--surface2);border-radius:10px;margin-bottom:8px;border-left:3px solid var(--pink);
+  }
+  .event-item .d{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--yellow);min-width:78px;}
+  .task-item{border-left-color:var(--teal);}
+  .task-item.done{opacity:.45;text-decoration:line-through;}
+  .task-item label{display:flex;align-items:center;gap:10px;flex:1;font-size:14px;cursor:pointer;}
+  .del{background:transparent;border:none;color:var(--muted);font-size:16px;}
+  .del:hover{color:var(--pink);}
+
+  /* PROPUESTAS */
+  .prop-item{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px;
+  }
+  .prop-item .txt{flex:1;font-size:14.5px;}
+  .prop-item.hecha{border-left:4px solid var(--teal);}
+  .prop-item.pendiente{border-left:4px solid var(--yellow);}
+  .toggle{
+    font-size:11px;text-transform:uppercase;font-weight:700;padding:6px 12px;border-radius:20px;border:1px solid var(--line);
+  }
+  .prop-item.hecha .toggle{color:var(--teal);border-color:var(--teal);}
+  .prop-item.pendiente .toggle{color:var(--yellow);border-color:var(--yellow);}
+
+  /* AYUDA */
+  .ayuda-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+  .ayuda-btn{
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;text-align:left;
+    color:var(--ink);font-size:14.5px;font-weight:600;transition:.15s;
+  }
+  .ayuda-btn:hover{border-color:var(--pink);background:var(--surface2);}
+  .ayuda-msg{
+    margin-top:18px;background:linear-gradient(135deg,var(--surface2),var(--surface));border:1px solid var(--pink);
+    border-radius:14px;padding:20px 22px;font-size:15px;line-height:1.6;display:none;color:var(--paper);
+  }
+  .ayuda-msg.show{display:block;animation:fadein .3s ease;}
+
+  /* ACTAS */
+  .acta-preview{
+    background:var(--paper);color:#1a1a1a;border-radius:12px;padding:34px;font-family:'JetBrains Mono',monospace;
+    font-size:13.5px;line-height:1.7;white-space:pre-wrap;margin-top:18px;min-height:200px;
+  }
+
+  /* CHAT */
+  .chat-toggle{
+    position:fixed;bottom:26px;right:26px;width:60px;height:60px;border-radius:50%;
+    background:var(--pink);border:none;box-shadow:0 8px 24px -6px rgba(255,61,119,.6);
+    display:flex;align-items:center;justify-content:center;z-index:50;
+  }
+  .chat-toggle svg{width:26px;height:26px;stroke:#12151c;fill:none;stroke-width:2;}
+  .chat-window{
+    position:fixed;bottom:98px;right:26px;width:340px;max-height:480px;background:var(--surface);
+    border:1px solid var(--line);border-radius:16px;display:none;flex-direction:column;overflow:hidden;
+    z-index:50;box-shadow:0 20px 50px -12px rgba(0,0,0,.6);
+  }
+  .chat-window.open{display:flex;}
+  .chat-head{background:var(--surface2);padding:14px 16px;font-family:'Anton',sans-serif;font-size:14px;letter-spacing:.5px;color:var(--paper);border-bottom:1px solid var(--line);}
+  .chat-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;max-height:320px;}
+  .msg{padding:9px 12px;border-radius:10px;font-size:13px;line-height:1.5;max-width:88%;}
+  .msg.bot{background:var(--surface2);color:var(--ink);align-self:flex-start;}
+  .msg.user{background:var(--pink);color:#12151c;align-self:flex-end;font-weight:600;}
+  .chat-input{display:flex;border-top:1px solid var(--line);}
+  .chat-input input{flex:1;background:transparent;border:none;color:var(--ink);padding:12px;font-size:13px;outline:none;}
+  .chat-input button{background:transparent;border:none;color:var(--teal);padding:0 14px;font-weight:700;font-size:13px;}
+  .chat-quick{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px;}
+  .chat-quick button{background:var(--surface2);border:1px solid var(--line);color:var(--ink-dim);font-size:11px;padding:5px 10px;border-radius:20px;}
+
+  .empty{color:var(--muted);font-size:13px;padding:14px 0;}
+  label.small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;}
+  .field{display:flex;flex-direction:column;flex:1;min-width:130px;}
+
+  @media(max-width:700px){
+    .app{flex-direction:column;}
+    .sidebar{width:100%;height:auto;flex-direction:row;position:static;padding:10px;}
+    .brand{display:none;}
+    .navlist{flex-direction:row;flex-wrap:wrap;justify-content:center;}
+    .main{padding:20px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="brand">CENTRO</div>
+    <div class="navlist">
+      <button class="navbtn active" data-view="inicio"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Inicio</button>
+      <button class="navbtn" data-view="calendario"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agenda</button>
+      <button class="navbtn" data-view="propuestas"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Propuestas</button>
+      <button class="navbtn" data-view="ayuda"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 115.8 1c0 2-3 2-3 4M12 17h.01"/></svg>Ayuda</button>
+      <button class="navbtn" data-view="actas"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 15h6M9 11h6"/></svg>Actas</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- INICIO -->
+    <div class="view active" id="view-inicio">
+      <div class="hero">
+        <div>
+          <h1 id="saludo">Hola Tomás</h1>
+          <div class="sub" id="fechaHoy"></div>
+        </div>
+        <div class="countdown">
+          <div class="num" id="diasFaltan">--</div>
+          <div class="lbl">días para<br>las elecciones</div>
+        </div>
+      </div>
+
+      <div class="section-title"><h2>Equipo del Centro</h2><span class="stamp">CARGOS · 25 SEP</span></div>
+      <div class="summary-row">
+        <div class="chip ok"><span class="dot"></span> <span id="cntOcupados">0</span> ocupados</div>
+        <div class="chip warn"><span class="dot"></span> <span id="cntVacantes">0</span> vacantes</div>
+        <button class="btn ghost" id="addAyudanteBtn" style="margin-left:auto;">+ Agregar ayudante</button>
+      </div>
+
+      <div class="section-title"><h2 style="font-size:15px;color:var(--teal)">Ocupados</h2></div>
+      <div class="roster" id="rosterOcupados"></div>
+
+      <div class="section-title"><h2 style="font-size:15px;color:var(--yellow)">Vacantes</h2></div>
+      <div class="roster" id="rosterVacantes"></div>
+    </div>
+
+    <!-- CALENDARIO -->
+    <div class="view" id="view-calendario">
+      <div class="section-title"><h2>Agenda y tareas</h2><span class="stamp" id="rangoFechas"></span></div>
+      <div class="grid2">
+        <div class="panel">
+          <h3 style="font-size:14px;color:var(--paper);margin-bottom:14px;">Fechas importantes</h3>
+          <div class="addform">
+            <div class="field"><label class="small">Fecha</label><input type="date" id="evFecha"></div>
+            <div class="field" style="flex:2"><label class="small">Título</label><input type="text" id="evTitulo" placeholder="Ej: Reunión con dirección"></div>
+            <button class="btn" id="addEvento" style="align-self:flex-end;">Agregar</button>
+          </div>
+          <div id="listaEventos"></div>
+        </div>
+        <div class="panel">
+          <h3 style="font-size:14px;color:var(--paper);margin-bottom:14px;">Tareas</h3>
+          <div class="addform">
+            <div class="field" style="flex:2"><label class="small">Tarea</label><input type="text" id="taTexto" placeholder="Ej: Imprimir afiches"></div>
+            <div class="field"><label class="small">Fecha límite</label><input type="date" id="taFecha"></div>
+            <button class="btn alt" id="addTarea" style="align-self:flex-end;">Agregar</button>
+          </div>
+          <div id="listaTareas"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROPUESTAS -->
+    <div class="view" id="view-propuestas">
+      <div class="section-title"><h2>Propuestas de campaña</h2><span class="stamp" id="propProgreso">0/0</span></div>
+      <div class="panel" style="margin-bottom:18px;">
+        <div class="addform">
+          <div class="field" style="flex:3"><label class="small">Nueva propuesta</label><input type="text" id="propTexto" placeholder="Ej: Bebederos nuevos en el patio"></div>
+          <button class="btn" id="addPropuesta" style="align-self:flex-end;">Agregar</button>
+        </div>
+      </div>
+      <div id="listaPropuestas"></div>
+    </div>
+
+    <!-- AYUDA -->
+    <div class="view" id="view-ayuda">
+      <div class="section-title"><h2>Necesito ayuda</h2><span class="stamp">Espacio personal</span></div>
+      <div class="ayuda-grid" id="ayudaGrid"></div>
+      <div class="ayuda-msg" id="ayudaMsg"></div>
+    </div>
+
+    <!-- ACTAS -->
+    <div class="view" id="view-actas">
+      <div class="section-title"><h2>Generador de actas y permisos</h2><span class="stamp">Documento formal</span></div>
+      <div class="panel">
+        <div class="addform">
+          <div class="field"><label class="small">Tipo de documento</label>
+            <select id="actaTipo"><option value="permiso">Solicitud de permiso</option><option value="acta">Acta de reunión</option></select>
+          </div>
+          <div class="field"><label class="small">Actividad</label><input type="text" id="actaActividad" placeholder="Ej: Jornada solidaria"></div>
+          <div class="field"><label class="small">Fecha</label><input type="date" id="actaFecha"></div>
+        </div>
+        <div class="addform">
+          <div class="field"><label class="small">Horario</label><input type="text" id="actaHorario" placeholder="Ej: 09:00 a 12:00 hs"></div>
+          <div class="field"><label class="small">Lugar</label><input type="text" id="actaLugar" placeholder="Ej: Patio principal"></div>
+          <div class="field"><label class="small">Responsable</label><input type="text" id="actaResponsable" placeholder="Ej: Tomás Pérez, Presidente"></div>
+        </div>
+        <div class="addform">
+          <div class="field" style="flex:3"><label class="small">Detalle / justificación</label><input type="text" id="actaDetalle" placeholder="Breve descripción de la actividad y su objetivo"></div>
+          <div class="field"><label class="small">Destinatario</label><input type="text" id="actaDestinatario" placeholder="Ej: Sr. Director"></div>
+        </div>
+        <button class="btn" id="genActa" style="margin-top:6px;">Generar documento</button>
+        <div class="acta-preview" id="actaPreview">El documento generado aparecerá aquí.</div>
+        <button class="btn ghost" id="copyActa" style="margin-top:12px;">Copiar texto</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CHAT -->
+<button class="chat-toggle" id="chatToggle"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></button>
+<div class="chat-window" id="chatWindow">
+  <div class="chat-head">Asistente del Centro</div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-quick" id="chatQuick"></div>
+  <div class="chat-input"><input type="text" id="chatInput" placeholder="Preguntame algo..."><button id="chatSend">Enviar</button></div>
+</div>
+
+<script>
+/* ================= UTILIDADES ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const uid = () => Math.random().toString(36).slice(2,9);
+const load = (k,d) => { try{ const v = JSON.parse(localStorage.getItem(k)); return v===null?d:v; }catch(e){return d;} };
+const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+
+/* ================= NAVEGACIÓN ================= */
+$$('.navbtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    $$('.navbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    $$('.view').forEach(v=>v.classList.remove('active'));
+    $('#view-'+btn.dataset.view).classList.add('active');
+  });
+});
+
+/* ================= FECHA / CONTADOR ================= */
+function pad(n){return n.toString().padStart(2,'0');}
+const hoy = new Date();
+function fechaLarga(d){
+  const dias=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  return `${dias[d.getDay()]} ${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
+}
+let eleccion = new Date(hoy.getFullYear(),8,25); // mes 8 = septiembre
+if(eleccion < new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate())){
+  eleccion = new Date(hoy.getFullYear()+1,8,25);
+}
+const msPorDia = 1000*60*60*24;
+const diasFaltan = Math.ceil((eleccion - new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate())) / msPorDia);
+
+$('#saludo').textContent = 'Hola Tomás 👋';
+$('#fechaHoy').textContent = `Hoy es ${fechaLarga(hoy)}`;
+$('#diasFaltan').textContent = diasFaltan;
+$('#rangoFechas').textContent = `HOY → 25 SEP · ${diasFaltan} DÍAS`;
+
+/* ================= DATOS: CARGOS ================= */
+const PUESTOS_BASE = [
+  "Presidente","Vicepresidente","Secretario","Tesorero",
+  "Secretario de Comunicación y Prensa","Subsecretario de Comunicación y Prensa",
+  "Secretario de Ambiente","Subsecretario de Ambiente",
+  "Secretario de Acción Solidaria","Subsecretario de Acción Solidaria",
+  "Secretario de Género, Mujeres y Diversidades","Subsecretario de Género, Mujeres y Diversidades",
+  "Secretario de Deporte y Recreación","Subsecretario de Deporte y Recreación",
+  "Secretario de DDHH y Cultura","Subsecretario de DDHH y Cultura",
+  "Secretario de Bienestar Estudiantil","Subsecretario de Bienestar Estudiantil",
+  "Consejero Docente"
+];
+
+function cargosIniciales(){
+  return PUESTOS_BASE.map(p=>({id:uid(),puesto:p,nombre:'',curso:'',telefono:'',rating:0,esAyudante:false}));
+}
+let cargos = load('cargos', null);
+if(!cargos){ cargos = cargosIniciales(); save('cargos',cargos); }
+
+function renderRoster(){
+  const ocupados = cargos.filter(c=>c.nombre.trim()!=='');
+  const vacantes = cargos.filter(c=>c.nombre.trim()==='');
+  $('#cntOcupados').textContent = ocupados.length;
+  $('#cntVacantes').textContent = vacantes.length;
+
+  const rOc = $('#rosterOcupados'); rOc.innerHTML='';
+  if(ocupados.length===0) rOc.innerHTML = '<div class="empty">Todavía no cargaste a nadie.</div>';
+  ocupados.forEach(c=> rOc.appendChild(cardEl(c)));
+
+  const rVa = $('#rosterVacantes'); rVa.innerHTML='';
+  if(vacantes.length===0) rVa.innerHTML = '<div class="empty">No hay cargos vacantes 🎉</div>';
+  vacantes.forEach(c=> rVa.appendChild(cardEl(c)));
+}
+
+function starsHTML(c){
+  let h = '<div class="stars" data-id="'+c.id+'">';
+  for(let i=1;i<=5;i++){
+    h += `<span class="star ${i<=c.rating?'filled':''}" data-val="${i}">★</span>`;
+  }
+  h += '</div>';
+  return h;
+}
+
+function cardEl(c){
+  const div = document.createElement('div');
+  const vac = c.nombre.trim()==='';
+  div.className = 'card' + (vac?' vacante':'');
+  div.innerHTML = `
+    ${vac?'<span class="badge-vac">Vacante</span>':''}
+    <div class="puesto">${c.puesto}${c.esAyudante?' (ayudante)':''}</div>
+    <div class="nombre">${vac?'Sin asignar':c.nombre}</div>
+    <div class="meta">
+      <span>🎓 ${c.curso||'—'}</span>
+      <span>📞 ${c.telefono||'—'}</span>
+    </div>
+    ${!vac?starsHTML(c):''}
+    <button class="editbtn">Editar</button>
+    <div class="edit-form">
+      <div class="row">
+        <input type="text" placeholder="Nombre" class="in-nombre" value="${c.nombre}">
+      </div>
+      <div class="row">
+        <input type="text" placeholder="Curso" class="in-curso" value="${c.curso}">
+        <input type="text" placeholder="Teléfono" class="in-tel" value="${c.telefono}">
+      </div>
+      <button class="save-btn">Guardar</button>
+    </div>
+  `;
+  div.querySelector('.editbtn').addEventListener('click', ()=>{
+    div.querySelector('.edit-form').classList.toggle('open');
+  });
+  div.querySelector('.save-btn').addEventListener('click', ()=>{
+    c.nombre = div.querySelector('.in-nombre').value.trim();
+    c.curso = div.querySelector('.in-curso').value.trim();
+    c.telefono = div.querySelector('.in-tel').value.trim();
+    save('cargos',cargos);
+    renderRoster();
+  });
+  if(!vac){
+    div.querySelectorAll('.star').forEach(st=>{
+      st.addEventListener('click', ()=>{
+        c.rating = parseInt(st.dataset.val);
+        save('cargos',cargos);
+        renderRoster();
+      });
+    });
+  }
+  return div;
+}
+
+$('#addAyudanteBtn').addEventListener('click', ()=>{
+  cargos.push({id:uid(),puesto:'Ayudante',nombre:'',curso:'',telefono:'',rating:0,esAyudante:true});
+  save('cargos',cargos);
+  renderRoster();
+});
+
+renderRoster();
+
+/* ================= CALENDARIO / TAREAS ================= */
+let eventos = load('eventos', []);
+let tareas = load('tareas', []);
+
+function fmtFechaCorta(iso){
+  if(!iso) return '';
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function renderEventos(){
+  const cont = $('#listaEventos'); cont.innerHTML='';
+  const ordenados = [...eventos].sort((a,b)=> a.fecha.localeCompare(b.fecha));
+  if(ordenados.length===0){ cont.innerHTML='<div class="empty">No hay fechas cargadas todavía.</div>'; return; }
+  ordenados.forEach(ev=>{
+    const el = document.createElement('div');
+    el.className='event-item';
+    el.innerHTML = `<div><span class="d">${fmtFechaCorta(ev.fecha)}</span> &nbsp; ${ev.titulo}</div><button class="del">✕</button>`;
+    el.querySelector('.del').addEventListener('click', ()=>{
+      eventos = eventos.filter(e=>e.id!==ev.id);
+      save('eventos',eventos); renderEventos();
+    });
+    cont.appendChild(el);
+  });
+}
+function renderTareas(){
+  const cont = $('#listaTareas'); cont.innerHTML='';
+  const ordenadas = [...tareas].sort((a,b)=> (a.fecha||'').localeCompare(b.fecha||''));
+  if(ordenadas.length===0){ cont.innerHTML='<div class="empty">No hay tareas cargadas todavía.</div>'; return; }
+  ordenadas.forEach(t=>{
+    const el = document.createElement('div');
+    el.className='task-item'+(t.hecha?' done':'');
+    el.innerHTML = `<label><input type="checkbox" ${t.hecha?'checked':''}> ${t.texto} ${t.fecha?'<span class="mono" style="color:var(--muted);font-size:11px;">('+fmtFechaCorta(t.fecha)+')</span>':''}</label><button class="del">✕</button>`;
+    el.querySelector('input').addEventListener('change', e=>{
+      t.hecha = e.target.checked; save('tareas',tareas); renderTareas();
+    });
+    el.querySelector('.del').addEventListener('click', ()=>{
+      tareas = tareas.filter(x=>x.id!==t.id);
+      save('tareas',tareas); renderTareas();
+    });
+    cont.appendChild(el);
+  });
+}
+$('#addEvento').addEventListener('click', ()=>{
+  const fecha = $('#evFecha').value, titulo = $('#evTitulo').value.trim();
+  if(!fecha || !titulo) return;
+  eventos.push({id:uid(),fecha,titulo});
+  save('eventos',eventos);
+  $('#evTitulo').value='';
+  renderEventos();
+});
+$('#addTarea').addEventListener('click', ()=>{
+  const texto = $('#taTexto').value.trim(), fecha = $('#taFecha').value;
+  if(!texto) return;
+  tareas.push({id:uid(),texto,fecha,hecha:false});
+  save('tareas',tareas);
+  $('#taTexto').value='';
+  renderTareas();
+});
+renderEventos(); renderTareas();
+
+/* ================= PROPUESTAS ================= */
+let propuestas = load('propuestas', []);
+function renderPropuestas(){
+  const cont = $('#listaPropuestas'); cont.innerHTML='';
+  if(propuestas.length===0){ cont.innerHTML='<div class="empty">Todavía no cargaste propuestas de campaña.</div>'; }
+  propuestas.forEach(p=>{
+    const el = document.createElement('div');
+    el.className = 'prop-item ' + (p.hecha?'hecha':'pendiente');
+    el.innerHTML = `<div class="txt">${p.texto}</div>
+      <button class="toggle">${p.hecha?'✔ Hecha':'Pendiente'}</button>
+      <button class="del">✕</button>`;
+    el.querySelector('.toggle').addEventListener('click', ()=>{
+      p.hecha = !p.hecha; save('propuestas',propuestas); renderPropuestas();
+    });
+    el.querySelector('.del').addEventListener('click', ()=>{
+      propuestas = propuestas.filter(x=>x.id!==p.id);
+      save('propuestas',propuestas); renderPropuestas();
+    });
+    cont.appendChild(el);
+  });
+  const hechas = propuestas.filter(p=>p.hecha).length;
+  $('#propProgreso').textContent = `${hechas}/${propuestas.length} cumplidas`;
+}
+$('#addPropuesta').addEventListener('click', ()=>{
+  const texto = $('#propTexto').value.trim();
+  if(!texto) return;
+  propuestas.push({id:uid(),texto,hecha:false});
+  save('propuestas',propuestas);
+  $('#propTexto').value='';
+  renderPropuestas();
+});
+renderPropuestas();
+
+/* ================= AYUDA ================= */
+const AYUDA_OPCIONES = [
+  {id:'estresado', label:'Me siento estresado', frases:[
+    "Respirá hondo. Un día de mucho quilombo no define todo lo que armaste. Hacé una lista corta de lo urgente y soltá el resto por hoy.",
+    "El estrés baja cuando ordenás. Elegí una sola cosa para resolver ahora y las demás quedan para después. Vas bien.",
+    "Frenar un rato también es productivo. Tomate 10 minutos antes de seguir, te lo merecés."
+  ]},
+  {id:'maldia', label:'Hoy fue un mal día', frases:[
+    "Los días malos no borran todo lo bueno que vas construyendo. Mañana es otra oportunidad.",
+    "No todo tiene que salir perfecto siempre. Lo importante es que seguís ahí, sosteniendo el proyecto.",
+    "Un mal día no es un mal centro de estudiantes. Descansá y volvés con más fuerza."
+  ]},
+  {id:'sinayuda', label:'Mi equipo no me ayuda', frases:[
+    "A veces hay que repartir tareas más chicas y concretas, es más fácil decir que sí a algo puntual.",
+    "No estás solo en esto aunque a veces se sienta así. Hablalo directamente con quien creas que puede sumar más.",
+    "Liderar también es enseñar a delegar. Probá pedir ayuda por tareas específicas esta semana."
+  ]},
+  {id:'nosecomoseguir', label:'No sé cómo seguir', frases:[
+    "No hace falta tener todo resuelto hoy. Elegí el próximo paso más chico y arrancá por ahí.",
+    "Es normal no tener el mapa completo. Confiá en que lo vas a ir armando en el camino.",
+    "Volvé a las propuestas de campaña: ahí está el rumbo. Un paso a la vez."
+  ]},
+  {id:'solo', label:'Me siento solo haciendo las cosas', frases:[
+    "Todo el centro de estudiantes está para acompañarte, aunque a veces no se note en el día a día.",
+    "Pedir ayuda no es debilidad, es parte de organizar bien un equipo. Escribile a alguien del team hoy mismo.",
+    "Lo que estás construyendo importa, y no lo estás construyendo solo aunque hoy se sienta pesado."
+  ]},
+  {id:'cansado', label:'Estoy muy cansado', frases:[
+    "Descansar también es parte del laburo. Un rato de pausa te va a rendir más que forzarla.",
+    "No todo se resuelve hoy. Cuidate primero para poder seguir sosteniendo el proyecto.",
+    "El cansancio es una señal, no una falla tuya. Escuchala."
+  ]},
+];
+const grid = $('#ayudaGrid');
+AYUDA_OPCIONES.forEach(op=>{
+  const b = document.createElement('button');
+  b.className='ayuda-btn';
+  b.textContent = op.label;
+  b.addEventListener('click', ()=>{
+    const frase = op.frases[Math.floor(Math.random()*op.frases.length)];
+    const box = $('#ayudaMsg');
+    box.textContent = frase;
+    box.classList.remove('show'); void box.offsetWidth; box.classList.add('show');
+  });
+  grid.appendChild(b);
+});
+
+/* ================= ACTAS / PERMISOS ================= */
+function generarActa(){
+  const tipo = $('#actaTipo').value;
+  const actividad = $('#actaActividad').value.trim() || '________________';
+  const fechaRaw = $('#actaFecha').value;
+  const fecha = fechaRaw ? fechaLarga(new Date(fechaRaw+'T00:00:00')) : '________________';
+  const horario = $('#actaHorario').value.trim() || '________________';
+  const lugar = $('#actaLugar').value.trim() || '________________';
+  const responsable = $('#actaResponsable').value.trim() || '________________';
+  const detalle = $('#actaDetalle').value.trim() || 'sin detalle adicional';
+  const destinatario = $('#actaDestinatario').value.trim() || 'Autoridades del establecimiento';
+
+  let texto = '';
+  if(tipo === 'permiso'){
+    texto =
+`SOLICITUD DE PERMISO
+
+${destinatario}:
+
+Por medio de la presente, el Centro de Estudiantes solicita autorización para la realización de la actividad "${actividad}", a llevarse a cabo el día ${fecha}, en el horario de ${horario}, en ${lugar}.
+
+Motivo / descripción de la actividad:
+${detalle}
+
+Quedamos a disposición para brindar cualquier información adicional que se considere necesaria, y agradecemos desde ya la atención prestada.
+
+Sin otro particular, saludamos atentamente.
+
+_______________________________
+Firma del responsable: ${responsable}
+
+_______________________________
+Firma y aclaración de la autoridad institucional
+
+
+Lugar y fecha: ______________________, ${fecha}`;
+  } else {
+    texto =
+`ACTA DE REUNIÓN
+
+En la ciudad de ______________, a ${fecha}, siendo las ${horario}, se reúnen en ${lugar} los integrantes del Centro de Estudiantes con el objeto de tratar la actividad "${actividad}".
+
+Desarrollo:
+${detalle}
+
+Responsable a cargo: ${responsable}
+
+No siendo para más, se da por finalizada la presente reunión, firmando los presentes en conformidad.
+
+_______________________________
+Firma del responsable
+
+_______________________________
+Firma y aclaración de la autoridad institucional
+
+_______________________________
+Firma testigo`;
+  }
+  $('#actaPreview').textContent = texto;
+}
+$('#genActa').addEventListener('click', generarActa);
+$('#copyActa').addEventListener('click', ()=>{
+  const txt = $('#actaPreview').textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b = $('#copyActa'); const old = b.textContent;
+    b.textContent = '¡Copiado!'; setTimeout(()=>b.textContent=old,1500);
+  });
+});
+
+/* ================= CHAT IA SENCILLA ================= */
+const chatToggle = $('#chatToggle'), chatWindow = $('#chatWindow'), chatBody = $('#chatBody'), chatInput = $('#chatInput');
+chatToggle.addEventListener('click', ()=> chatWindow.classList.toggle('open'));
+
+function addMsg(text, who){
+  const el = document.createElement('div');
+  el.className = 'msg ' + who;
+  el.textContent = text;
+  chatBody.appendChild(el);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+addMsg('Hola Tomás, puedo contarte qué hay para hacer, quién tiene mejores reseñas o qué falta de tus propuestas. ¿Qué necesitás?','bot');
+
+const QUICK = [
+  '¿Qué hay esta semana?',
+  '¿Qué hay que hacer hoy?',
+  '¿Con quién puedo contar?',
+  '¿Qué propuestas faltan?'
+];
+const quickCont = $('#chatQuick');
+QUICK.forEach(q=>{
+  const b = document.createElement('button');
+  b.textContent = q;
+  b.addEventListener('click', ()=> handleUserMsg(q));
+  quickCont.appendChild(b);
+});
+
+function isoToday(){ return hoy.toISOString().slice(0,10); }
+function inNextDays(iso, n){
+  if(!iso) return false;
+  const d = new Date(iso+'T00:00:00');
+  const diff = (d - new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()))/msPorDia;
+  return diff>=0 && diff<=n;
+}
+
+function responderIA(msg){
+  const m = msg.toLowerCase();
+
+  if(m.includes('semana')){
+    const evs = eventos.filter(e=>inNextDays(e.fecha,7));
+    const tks = tareas.filter(t=>!t.hecha && inNextDays(t.fecha,7));
+    if(evs.length===0 && tks.length===0) return 'Esta semana no tenés fechas ni tareas cargadas. ¡Momento tranqui!';
+    let r = 'Esta semana tenés:\n';
+    evs.forEach(e=> r += `📅 ${fmtFechaCorta(e.fecha)} — ${e.titulo}\n`);
+    tks.forEach(t=> r += `✅ ${t.texto}${t.fecha?' ('+fmtFechaCorta(t.fecha)+')':''}\n`);
+    return r.trim();
+  }
+
+  if(m.includes('hoy')){
+    const evs = eventos.filter(e=>e.fecha===isoToday());
+    const tks = tareas.filter(t=>!t.hecha && t.fecha===isoToday());
+    if(evs.length===0 && tks.length===0) return 'Para hoy no tenés nada cargado en la agenda ni tareas pendientes con esa fecha.';
+    let r = 'Para hoy:\n';
+    evs.forEach(e=> r += `📅 ${e.titulo}\n`);
+    tks.forEach(t=> r += `✅ ${t.texto}\n`);
+    return r.trim();
+  }
+
+  if(m.includes('contar') || m.includes('confia') || m.includes('mejor')){
+    const conRating = cargos.filter(c=>c.nombre.trim()!=='' && c.rating>0).sort((a,b)=>b.rating-a.rating);
+    if(conRating.length===0) return 'Todavía no cargaste reseñas con estrellas para nadie del equipo.';
+    let r = 'Según tus reseñas, los mejor puntuados son:\n';
+    conRating.slice(0,5).forEach(c=> r += `⭐${c.rating} — ${c.nombre} (${c.puesto})\n`);
+    return r.trim();
+  }
+
+  if(m.includes('propuesta')){
+    const pend = propuestas.filter(p=>!p.hecha);
+    const hechas = propuestas.filter(p=>p.hecha);
+    if(propuestas.length===0) return 'Todavía no cargaste propuestas de campaña en el apartado correspondiente.';
+    let r = `Llevás ${hechas.length}/${propuestas.length} propuestas cumplidas.\n`;
+    if(pend.length>0){
+      r += 'Faltan:\n';
+      pend.forEach(p=> r += `• ${p.texto}\n`);
+    } else {
+      r += '¡Cumpliste todas las propuestas cargadas! 🎉';
+    }
+    return r.trim();
+  }
+
+  if(m.includes('vacante') || m.includes('falta gente') || m.includes('desocupado')){
+    const vac = cargos.filter(c=>c.nombre.trim()==='');
+    if(vac.length===0) return 'No tenés cargos vacantes, ¡el equipo está completo!';
+    return 'Cargos vacantes:\n' + vac.map(c=>'• '+c.puesto).join('\n');
+  }
+
+  if(m.includes('eleccion') || m.includes('cuanto falta')){
+    return `Faltan ${diasFaltan} días para las elecciones del 25 de septiembre.`;
+  }
+
+  if(m.includes('hola') || m.includes('buenas')){
+    return '¡Hola! Preguntame por tareas de hoy, de la semana, quién tiene mejores reseñas, propuestas pendientes o vacantes.';
+  }
+
+  return 'No tengo una respuesta armada para eso todavía. Probá preguntarme por: la semana, hoy, con quién contar, propuestas o vacantes.';
+}
+
+function handleUserMsg(text){
+  if(!text.trim()) return;
+  addMsg(text,'user');
+  chatInput.value='';
+  setTimeout(()=> addMsg(responderIA(text),'bot'), 250);
+}
+$('#chatSend').addEventListener('click', ()=> handleUserMsg(chatInput.value));
+chatInput.addEventListener('keydown', e=>{ if(e.key==='Enter') handleUserMsg(chatInput.value); });
+</script>
+</body>
+</html>
