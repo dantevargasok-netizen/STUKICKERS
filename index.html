@@ -259,27 +259,55 @@ footer{border-top:1px solid #1f1f1f;padding:24px 0 90px;color:#737373;font-size:
 
 <script>
 /* =====================================================================
-   CONFIGURACIÓN — todo lo que vas a querer tocar está en este bloque
+   PANEL DE CONFIGURACIÓN RÁPIDA
+   Para cambiar productos o cupones, editá solamente los bloques de abajo.
+   No hace falta tocar las funciones del sitio.
    ===================================================================== */
 const CONFIG={
-  whatsapp:'5491164803498',
-  logo:'stukickersrojopng.png',            // ← tu logo: 'logo.png' (archivo junto al HTML), una URL o un data:image. Vacío = recuadro provisorio.
-  logoSide:'right',   // 'right' (esquina superior derecha) o 'left'
+  whatsapp:'5491164803498', // WhatsApp en formato internacional: 54 + 9 + código de área + número, sin + ni espacios
+  logo:'stukickersrojopng.png', // Nombre del archivo del logo (debe estar junto al HTML), URL o vacío para usar el placeholder
+  logoSide:'right', // 'right' o 'left'
   promo:{name:'Promo todos los packs (+1000 diseños)',price:15000,designs:1000,separatePrice:30000},
-  /* Estadísticas en Firebase (Firestore). Pasos al final de este bloque. */
+  /* FIREBASE: por ahora se usa SOLAMENTE para guardar estadísticas en la colección events.
+     No administra productos ni cupones. Dejalo enabled:false si todavía no configuraste Firebase. */
   firebase:{enabled:false,apiKey:'',projectId:'',collection:'events'},
-  debug:false         // true = muestra cada evento en la consola (F12)
+  debug:false // true = mostrar eventos en la consola del navegador (F12)
 };
-/* CÓDIGOS DE DESCUENTO — agregá uno por línea.
-   type:'percent' (value = %) o 'fixed' (value = $ de descuento).
-   Con `code:'MICODIGO'` queda legible en el HTML; con `hash:` queda oculto (generalo en la consola con STK.hash('MICODIGO')).
-   Opcionales: active:false (apagarlo), expires:'2026-12-31', minSubtotal:5000. */
+
+/* ======================= CÓDIGOS DE DESCUENTO =========================
+   Copiá una línea de ejemplo y cambiá sus valores.
+   type:'percent' = porcentaje; type:'fixed' = importe fijo en pesos.
+   active:false desactiva un cupón sin borrarlo.
+   expires:'2026-12-31' establece el último día válido (opcional).
+   minSubtotal:5000 exige un subtotal mínimo (opcional).
+
+   Ejemplo porcentaje: {id:'lanzamiento10',code:'LANZAMIENTO10',type:'percent',value:10}
+   Ejemplo importe fijo: {id:'mil-pesos',code:'MILPESOS',type:'fixed',value:1000,minSubtotal:5000}
+
+   Para el cupón del 15% ya configurado, se conserva el hash para no escribir su código
+   en texto legible dentro del HTML. IMPORTANTE: un cupón validado en el navegador no es
+   un secreto seguro; para cupones realmente privados, la validación debe hacerse en servidor.
+   ===================================================================== */
 const DISCOUNTS=[
-  {id:'interno-15',hash:'1uxw6rsel4k',type:'percent',value:15},   // código secreto del 15%: no se muestra en ningún texto
-  // {id:'verano10',code:'VERANO10',type:'percent',value:10},
-  // {id:'mil-off',hash:'PEGAR_HASH_ACA',type:'fixed',value:1000,expires:'2026-12-31'},
+  {id:'interno-15',hash:'1uxw6rsel4k',type:'percent',value:15},
+  // {id:'lanzamiento10',code:'LANZAMIENTO10',type:'percent',value:10},
+  // {id:'mil-pesos',code:'MILPESOS',type:'fixed',value:1000,minSubtotal:5000},
+  // {id:'promo-vencible',code:'PROMO15',type:'percent',value:15,expires:'2026-12-31'},
 ];
-/* PACKS — cover:'portada.jpg' (imagen) · video:'URL' (YouTube, Vimeo, Google Drive o .mp4). Vacío = placeholder. */
+
+/* =========================== PACKS DIGITALES ==========================
+   Para agregar un pack, copiá uno de los objetos de la lista y pegalo antes
+   del cierre ]; cambiando como mínimo id, name, category, price, count, desc,
+   style y art. Cada id debe ser único.
+
+   category: 'Música', 'Argentina', 'Series y películas' u 'Otros'.
+   price: precio en pesos, solo número (ej. 5500).
+   count: cantidad que se muestra, como texto (ej. '+250 diseños' o '12 diseños').
+   style: 'red', 'black' o 'white'. art admite <br> para separar líneas.
+   tag: etiqueta opcional; dejala como '' si no querés una.
+   cover: nombre/URL de una imagen de portada; video: URL opcional.
+   Si cambiás las categorías, acordate de agregar su botón en el HTML de filtros.
+   ===================================================================== */
 const packs=[
  {id:1,name:'Rock Nacional',category:'Música',price:5000,count:'+130 diseños',desc:'Clásicos del rock argentino en PNG.',style:'red',art:'ROCK<br>NACIONAL',tag:'Más elegido',detail:'Un pack para quienes quieren llevar la cultura del rock argentino a sus diseños y prendas.',video:'',cover:''},
  {id:2,name:'Artistas Urbanos',category:'Música',price:5000,count:'+200 diseños',desc:'Diseños inspirados en la escena urbana.',style:'black',art:'ARTISTAS<br>URBANOS',tag:'Popular',detail:'Una selección de diseños inspirados en artistas de la escena urbana, listos para tus proyectos creativos.',video:'',cover:''},
@@ -290,10 +318,17 @@ const packs=[
  {id:7,name:'Omar Courtz',category:'Música',price:6000,count:'Pack digital',desc:'Diseños preparados para personalizar.',style:'red',art:'OMAR<br>COURTZ',tag:'',detail:'Diseños de Omar Courtz preparados para personalizar prendas y promocionar tus creaciones.',video:'',cover:''},
  {id:8,name:'Autos',category:'Otros',price:5000,count:'Pack digital',desc:'Diseños para amantes del mundo motor.',style:'white',art:'AUTO<br>CULTURE',tag:'',detail:'Pack digital para amantes de los autos y la cultura motor.',video:'',cover:''}
 ];
-/* FIREBASE en 5 pasos: 1) console.firebase.google.com → crear proyecto → Firestore Database (modo producción).
-   2) Reglas de Firestore:  match /events/{id}{ allow create: if true; allow read, update, delete: if false; }
-   3) Configuración del proyecto → "Tus apps" → app web → copiá apiKey y projectId.
-   4) Pegalos arriba y poné enabled:true.  5) Mirá los eventos en Firestore → colección "events". */
+/* CONFIGURAR FIREBASE (opcional, SOLO estadísticas; no sirve para editar packs/cupones):
+   1) Entrá a https://console.firebase.google.com/ y creá un proyecto.
+   2) En el proyecto, creá una base Firestore Database.
+   3) En Configuración del proyecto > Tus apps, registrá una app web y copiá apiKey y projectId.
+   4) Pegá esos dos valores en CONFIG.firebase y recién entonces cambiá enabled a true.
+   5) La colección configurada ('events') recibirá los eventos de navegación.
+   Seguridad: no habilites escrituras públicas sin límites en un sitio de producción; la API key
+   no protege la base. Usá reglas restrictivas, Firebase App Check y/o un backend para evitar spam.
+   Este HTML no incluye un panel remoto para administrar el catálogo. Para que los cambios de packs
+   y cupones se sincronicen entre dispositivos hace falta agregar Firestore + autenticación de admin.
+*/
 
 /* ============================ UTILIDADES ============================ */
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
