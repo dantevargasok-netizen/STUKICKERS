@@ -267,7 +267,8 @@ const CONFIG={
   whatsapp:'5491164803498', // WhatsApp en formato internacional: 54 + 9 + código de área + número, sin + ni espacios
   logo:'stukickersrojopng.png', // Nombre del archivo del logo (debe estar junto al HTML), URL o vacío para usar el placeholder
   logoSide:'right', // 'right' o 'left'
-  promo:{name:'Promo todos los packs (+1000 diseños)',price:25000,designs:+1000,separatePrice:77000},
+  /* code = código corto de la promo que viaja en el mensaje de WhatsApp (lo lee ManyChat) */
+  promo:{name:'Promo todos los packs (+1000 diseños)',code:'PROMO',price:25000,designs:+1000,separatePrice:77000},
   /* FIREBASE: por ahora se usa SOLAMENTE para guardar estadísticas en la colección events.
      No administra productos ni cupones. Dejalo enabled:false si todavía no configuraste Firebase. */
   firebase:{enabled:false,apiKey:'',projectId:'',collection:'events'},
@@ -297,9 +298,12 @@ const DISCOUNTS=[
 
 /* =========================== PACKS DIGITALES ==========================
    Para agregar un pack, copiá uno de los objetos de la lista y pegalo antes
-   del cierre ]; cambiando como mínimo id, name, category, price, count, desc,
-   style y art. Cada id debe ser único.
+   del cierre ]; cambiando como mínimo id, code, name, category, price, count, desc,
+   style y art. Cada id y cada code deben ser únicos.
 
+   code: código corto SIN espacios (ej. 'RN'). Viaja en el mensaje de WhatsApp como [RN]
+         y es lo que ManyChat usa para poner la etiqueta del pack. No lo cambies después
+         de armar los flujos, o tenés que actualizarlos también.
    category: 'Música', 'Argentina', 'Series y películas' u 'Otros'.
    price: precio en pesos, solo número (ej. 5500).
    count: cantidad que se muestra, como texto (ej. '+250 diseños' o '12 diseños').
@@ -309,18 +313,18 @@ const DISCOUNTS=[
    Si cambiás las categorías, acordate de agregar su botón en el HTML de filtros.
    ===================================================================== */
 const packs=[
- {id:1,name:'Rock Nacional',category:'Música',price:5000,count:'+130 diseños',desc:'Clásicos del rock argentino en PNG.',style:'red',art:'ROCK<br>NACIONAL',tag:'Más elegido',detail:'Un pack para quienes quieren llevar la cultura del rock argentino a sus diseños y prendas.',video:'https://youtu.be/Nblyu-qQlrM',cover:'rocknacional.png'},
- {id:2,name:'Artistas Urbanos',category:'Música',price:7000,count:'+200 diseños',desc:'Diseños inspirados en la escena urbana.',style:'black',art:'ARTISTAS<br>URBANOS',tag:'Popular',detail:'Una selección de diseños inspirados en artistas de la escena urbana, listos para tus proyectos creativos.',video:'https://youtu.be/j5zgRgf8grs',cover:'artistasurbanos.png'},
- {id:3,name:'Rock Internacional',category:'Música',price:7000,count:'+400 diseños',desc:'Dos volúmenes para fans del rock mundial.',style:'white',art:'ROCK<br>INTERNACIONAL',tag:'',detail:'Dos volúmenes digitales con diseños inspirados en el rock internacional.',video:'https://youtu.be/JNkUe_7gLe8',cover:'rockinternacional.png'},
- {id:4,name:'Argentina 2026',category:'Argentina',price:7000,count:'+160 diseños',desc:'Diseños albicelestes para tus prendas.',style:'white',art:'ARGENTINA<br>2026',tag:'Nuevo',detail:'Diseños con temática argentina para personalizar prendas y crear productos propios.',video:'https://youtu.be/vzpi9btoN3Y',cover:'argentina2026.png'},
- {id:5,name:'Stranger Things',category:'Series y películas',price:4000,count:'+90 diseños',desc:'Diseños inspirados en la serie.',style:'red',art:'STRANGER<br>THINGS',tag:'',detail:'Pack digital inspirado en la estética de Stranger Things, ideal para proyectos de personalización.',video:'',cover:'strangerthingspack.png'},
- {id:6,name:'Anuel AA',category:'Música',price:6000,count:'12 diseños',desc:'PNG transparente + mockups de regalo.',style:'black',art:'ANUEL<br>AA',tag:'Incluye regalo',detail:'Pack digital de Anuel AA con PNG transparente y mockups de regalo.',video:'',cover:'anuelaapack.png'},
- {id:7,name:'Omar Courtz',category:'Música',price:6000,count:'Pack digital',desc:'Diseños preparados para personalizar.',style:'red',art:'OMAR<br>COURTZ',tag:'',detail:'Diseños de Omar Courtz preparados para personalizar prendas y promocionar tus creaciones.',video:'',cover:'omarcourtzpack.png'},
- {id:8,name:'Autos',category:'Otros',price:10000,count:'Pack digital',desc:'Diseños para amantes del mundo motor.',style:'white',art:'AUTO<br>CULTURE',tag:'',detail:'Pack digital para amantes de los autos y la cultura motor.',video:'',cover:'autospack.png'},
- {id:9,name:'BTS',category:'Música',price:7000,count:'Pack digital',desc:'Diseños de la famosa banda de KPOP.',style:'white',art:'BTS',tag:'ANTES: $12000',detail:'Pack de diseños profesionales ideales para fans de BTS.',video:'',cover:'packbts.png'},
- {id:10,name:'Indio Solari',category:'Música',price:5000,count:'Pack digital',desc:'Diseños del historico cantante de rock nacional.',style:'white',art:'INDIO<br>SOLARI',tag:'NUEVO',detail:'Pack de diseños profesionales ideales para fans de Los Redondos, del Indio Solari y las bandas en las que estuvo.',video:'https://youtu.be/u8zUFPPuU1U',cover:'packindio.png'},
- {id:11,name:'Bad Bunny',category:'Música',price:7000,count:'Pack digital',desc:'Diseños profesionales de el.',style:'white',art:'BAD<br>BUNNY',tag:'',detail:'Pack de diseños profesionales ideales para fans de EL.',video:'',cover:'badbunny.png'},
- {id:12,name:'San Valentin',category:'Otros',price:7000,count:'Pack digital',desc:'Diseños profesionales para parejas.',style:'white',art:'SAN<br>VALENTÍN',tag:'',detail:'Pack de diseños profesionales ideales para parejas <3.',video:'',cover:'sanvalentin.png'}
+ {id:1,code:'RN',name:'Rock Nacional',category:'Música',price:5000,count:'+130 diseños',desc:'Clásicos del rock argentino en PNG.',style:'red',art:'ROCK<br>NACIONAL',tag:'Más elegido',detail:'Un pack para quienes quieren llevar la cultura del rock argentino a sus diseños y prendas.',video:'https://youtu.be/Nblyu-qQlrM',cover:'rocknacional.png'},
+ {id:2,code:'AU',name:'Artistas Urbanos',category:'Música',price:7000,count:'+200 diseños',desc:'Diseños inspirados en la escena urbana.',style:'black',art:'ARTISTAS<br>URBANOS',tag:'Popular',detail:'Una selección de diseños inspirados en artistas de la escena urbana, listos para tus proyectos creativos.',video:'https://youtu.be/j5zgRgf8grs',cover:'artistasurbanos.png'},
+ {id:3,code:'RI',name:'Rock Internacional',category:'Música',price:7000,count:'+400 diseños',desc:'Dos volúmenes para fans del rock mundial.',style:'white',art:'ROCK<br>INTERNACIONAL',tag:'',detail:'Dos volúmenes digitales con diseños inspirados en el rock internacional.',video:'https://youtu.be/JNkUe_7gLe8',cover:'rockinternacional.png'},
+ {id:4,code:'AR',name:'Argentina 2026',category:'Argentina',price:7000,count:'+160 diseños',desc:'Diseños albicelestes para tus prendas.',style:'white',art:'ARGENTINA<br>2026',tag:'Nuevo',detail:'Diseños con temática argentina para personalizar prendas y crear productos propios.',video:'https://youtu.be/vzpi9btoN3Y',cover:'argentina2026.png'},
+ {id:5,code:'ST',name:'Stranger Things',category:'Series y películas',price:4000,count:'+90 diseños',desc:'Diseños inspirados en la serie.',style:'red',art:'STRANGER<br>THINGS',tag:'',detail:'Pack digital inspirado en la estética de Stranger Things, ideal para proyectos de personalización.',video:'',cover:'strangerthingspack.png'},
+ {id:6,code:'AN',name:'Anuel AA',category:'Música',price:6000,count:'12 diseños',desc:'PNG transparente + mockups de regalo.',style:'black',art:'ANUEL<br>AA',tag:'Incluye regalo',detail:'Pack digital de Anuel AA con PNG transparente y mockups de regalo.',video:'',cover:'anuelaapack.png'},
+ {id:7,code:'OC',name:'Omar Courtz',category:'Música',price:6000,count:'Pack digital',desc:'Diseños preparados para personalizar.',style:'red',art:'OMAR<br>COURTZ',tag:'',detail:'Diseños de Omar Courtz preparados para personalizar prendas y promocionar tus creaciones.',video:'',cover:'omarcourtzpack.png'},
+ {id:8,code:'AT',name:'Autos',category:'Otros',price:10000,count:'Pack digital',desc:'Diseños para amantes del mundo motor.',style:'white',art:'AUTO<br>CULTURE',tag:'',detail:'Pack digital para amantes de los autos y la cultura motor.',video:'',cover:'autospack.png'},
+ {id:9,code:'BTS',name:'BTS',category:'Música',price:7000,count:'Pack digital',desc:'Diseños de la famosa banda de KPOP.',style:'white',art:'BTS',tag:'ANTES: $12000',detail:'Pack de diseños profesionales ideales para fans de BTS.',video:'',cover:'packbts.png'},
+ {id:10,code:'IS',name:'Indio Solari',category:'Música',price:5000,count:'Pack digital',desc:'Diseños del historico cantante de rock nacional.',style:'white',art:'INDIO<br>SOLARI',tag:'NUEVO',detail:'Pack de diseños profesionales ideales para fans de Los Redondos, del Indio Solari y las bandas en las que estuvo.',video:'https://youtu.be/u8zUFPPuU1U',cover:'packindio.png'},
+ {id:11,code:'BB',name:'Bad Bunny',category:'Música',price:7000,count:'Pack digital',desc:'Diseños profesionales de el.',style:'white',art:'BAD<br>BUNNY',tag:'',detail:'Pack de diseños profesionales ideales para fans de EL.',video:'',cover:'badbunny.png'},
+ {id:12,code:'SV',name:'San Valentin',category:'Otros',price:7000,count:'Pack digital',desc:'Diseños profesionales para parejas.',style:'white',art:'SAN<br>VALENTÍN',tag:'',detail:'Pack de diseños profesionales ideales para parejas <3.',video:'',cover:'sanvalentin.png'}
 ];
 /* CONFIGURAR FIREBASE (opcional, SOLO estadísticas; no sirve para editar packs/cupones):
    1) Entrá a https://console.firebase.google.com/ y creá un proyecto.
@@ -365,7 +369,7 @@ const TK=(()=>{
 
 /* ============================ ESTADO ============================ */
 let category='Todos',selected=new Set(),promoSelected=false,applied=null,activePack=null,busy=false,lastFocus=null;
-const items=()=>{const a=packs.filter(p=>selected.has(p.id)).map(p=>({id:p.id,name:p.name,price:p.price,count:parseInt(String(p.count).replace(/\D/g,''))||0,cover:p.cover,style:p.style,art:p.art}));if(promoSelected)a.push({id:'promo',name:CONFIG.promo.name,price:CONFIG.promo.price,count:CONFIG.promo.designs,style:'red',art:'PROMO'});return a};
+const items=()=>{const a=packs.filter(p=>selected.has(p.id)).map(p=>({id:p.id,name:p.name,price:p.price,count:parseInt(String(p.count).replace(/\D/g,''))||0,cover:p.cover,style:p.style,art:p.art,code:p.code||''}));if(promoSelected)a.push({id:'promo',name:CONFIG.promo.name,price:CONFIG.promo.price,count:CONFIG.promo.designs,style:'red',art:'PROMO',code:CONFIG.promo.code||'PROMO'});return a};
 const discOf=sub=>!applied?0:applied.type==='percent'?Math.round(sub*applied.value/100):Math.min(applied.value,sub);
 const calc=()=>{const it=items(),sub=it.reduce((s,p)=>s+p.price,0),disc=discOf(sub);return{items:it,sub,disc,total:sub-disc,designs:it.reduce((s,p)=>s+p.count,0)}};
 const dLabel=d=>d.type==='percent'?d.value+'%':money(d.value);
@@ -468,9 +472,11 @@ $('#applyDiscount').addEventListener('click',applyDiscount);
 $('#discountCode').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applyDiscount()}});
 
 /* WhatsApp */
-$('#openWhatsApp').addEventListener('click',()=>{const c=calc();
-  const msg=['Hola Stukickers! Quiero comprar:',...c.items.map(p=>`- ${p.name}: ${money(p.price)}`),`Total de diseños: ${c.designs.toLocaleString('es-AR')}+`,`Subtotal: ${money(c.sub)}`,`Descuento: ${c.disc?dLabel(applied)+' (-'+money(c.disc)+')':'No aplicado'}`,`TOTAL A PAGAR: ${money(c.total)}`,'','Quedo a la espera del alias para realizar el pago.'].join('\n');
-  TK('whatsapp_click',{total:c.total,subtotal:c.sub,discount:c.disc,discountId:applied?applied.id:null,items:c.items.map(i=>i.name)});
+/* Código de pedido único (sin 0/O/1/I para que no se confunda). Lo lee ManyChat y queda en las estadísticas. */
+const orderId=()=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let o='';const r=window.crypto&&crypto.getRandomValues?crypto.getRandomValues(new Uint8Array(5)):Array.from({length:5},()=>Math.floor(Math.random()*256));for(const v of r)o+=a[v%a.length];return 'STK-'+o};
+$('#openWhatsApp').addEventListener('click',()=>{const c=calc(),id=orderId(),codes=c.items.map(p=>p.code||'?');
+  const msg=['Hola Stukickers! Quiero comprar:',...c.items.map(p=>`- ${p.name}: ${money(p.price)}`),`Total de diseños: ${c.designs.toLocaleString('es-AR')}+`,`Subtotal: ${money(c.sub)}`,`Descuento: ${c.disc?dLabel(applied)+' (-'+money(c.disc)+')':'No aplicado'}`,`TOTAL A PAGAR: ${money(c.total)}`,'',`Pedido: ${id}`,`Packs: ${codes.map(x=>'['+x+']').join(' ')}`,'','Quedo a la espera del alias para realizar el pago.'].join('\n');
+  TK('whatsapp_click',{orderId:id,packCodes:codes,total:c.total,subtotal:c.sub,discount:c.disc,discountId:applied?applied.id:null,items:c.items.map(i=>i.name)});
   window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msg),'_blank','noopener')});
 $('#waFloat').href='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent('Hola Stukickers! Tengo una consulta sobre los packs.');
 $('#waFloat').addEventListener('click',()=>TK('whatsapp_float_click'));
