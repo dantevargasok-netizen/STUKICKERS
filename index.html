@@ -140,6 +140,25 @@ footer{border-top:1px solid #1f1f1f;padding:24px 0 90px;color:#737373;font-size:
 @media(max-width:720px){:root{--logo-h:38px}.nav{height:64px}.nav-note{display:none}.hero{padding:44px 0 30px}.hero p{font-size:15px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.pack-info{padding:12px}.pack-title{font-size:14px}.pack-desc{font-size:11px}.price{font-size:18px}.add{width:40px;height:40px}.sec-head p{display:none}.d-lay{grid-template-columns:1fr;padding:15px;gap:16px}.vid{padding:0 15px 15px}.overlay:not(.drawer){padding:8px;align-items:flex-end}.modal{max-height:calc(100dvh - 16px)}.mega-in{grid-template-columns:1fr;padding:22px}.cgrid{grid-template-columns:1fr}.panel{padding:17px}.stepper span.t{display:none}.stepper .on span.t{display:inline}.drawer .modal{border-radius:0}}
 @media(max-width:360px){.grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.js [data-reveal]{opacity:1}}
+/* Timer de la promo, aviso lateral y redes */
+.cd-wrap{margin-bottom:16px}.cd{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.cd div{background:#1a0d0f;border:1px solid #4a2227;border-radius:10px;padding:8px 4px;min-width:58px}
+.cd b{display:block;font-size:24px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.1}.cd small{font-size:9px;letter-spacing:1px;color:#aaa}
+.cd-end{display:none;color:#ff6b75;font-weight:900;letter-spacing:1px;margin-top:10px}.expired .cd{display:none}.expired .cd-end{display:block}
+.promo-side{position:fixed;left:max(12px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));z-index:24;display:flex;align-items:stretch;max-width:min(250px,calc(100vw - 96px));background:#141414;border:1px solid #6a2229;border-left:3px solid var(--red);border-radius:14px;box-shadow:0 12px 34px #000b;opacity:0;transform:translateX(-24px);visibility:hidden;pointer-events:none;transition:opacity .35s,transform .35s var(--ease),visibility 0s .35s}
+.promo-side.show{opacity:1;transform:none;visibility:visible;pointer-events:auto;transition:opacity .35s,transform .35s var(--ease)}
+.ps-main{display:flex;align-items:center;gap:10px;background:none;border:0;text-align:left;padding:11px 8px 11px 12px}
+.ps-main strong{display:block;font-size:11px;line-height:1.25;letter-spacing:.3px}.ps-main em{display:block;font-style:normal;font-size:12px;color:#ff6b75;font-weight:900;margin-top:4px;font-variant-numeric:tabular-nums}
+.arr{flex-shrink:0;color:var(--red);animation:bounceDown 1.4s ease-in-out infinite}
+.ps-x{background:none;border:0;color:#777;font-size:18px;padding:0 10px 0 2px;align-self:flex-start;margin-top:6px}
+@keyframes bounceDown{50%{transform:translateY(6px)}}
+.redes{padding:48px 0 8px;text-align:center;scroll-margin-top:90px}.redes h2{font-size:26px;letter-spacing:-.8px;font-weight:900}.redes p{color:#999;font-size:14px;margin:6px 0 0}
+.rs{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:20px}
+.rs a{display:flex;align-items:center;gap:9px;border:1px solid #303030;background:#111;border-radius:99px;padding:12px 18px;font-weight:800;font-size:13px;color:#fff;text-decoration:none;transition:border-color .2s,transform .15s,background .2s}
+.rs a:active{transform:scale(.96)}@media(hover:hover){.rs a:hover{border-color:var(--red);background:#1a0d0f;transform:translateY(-2px)}}
+.rs svg{color:var(--red)}
+body.in-co .promo-side{display:none}
+@media(max-width:720px){.ps-main strong{font-size:10px}.cd b{font-size:20px}.cd div{min-width:50px}}
 </style>
 </head>
 <body>
@@ -150,7 +169,7 @@ footer{border-top:1px solid #1f1f1f;padding:24px 0 90px;color:#737373;font-size:
       <span class="nav-note">PACKS DIGITALES · DISEÑOS PNG</span>
     </div>
     <!-- LOGO: se completa solo desde CONFIG.logo (ver el script). Si está vacío se muestra un recuadro provisorio. -->
-    <a class="brand" id="brandSlot" href="#top" aria-label="Stukickers, inicio"></a>
+    <a class="brand" id="brandSlot" href="#redes" aria-label="Ir a nuestras redes"></a>
   </div>
 </header>
 
@@ -183,13 +202,17 @@ footer{border-top:1px solid #1f1f1f;padding:24px 0 90px;color:#737373;font-size:
     <p class="mega-sub">Obtené <strong>+1000 diseños</strong> digitales para llevar tus estampados a otro nivel.</p>
     <div class="inc"><span>✓ Alta calidad</span><span>✓ Diseños digitales</span><span>✓ Ideales para personalizar</span></div>
   </div>
-  <div class="mega-box">
+  <div class="mega-box" id="megaBox">
+    <div class="cd-wrap" id="cdWrap"><div class="lbl">⏳ LA PROMO TERMINA EN</div>
+      <div class="cd" id="megaTimer" role="timer" aria-label="Tiempo restante de la promo"><div><b id="tD">0</b><small>DÍAS</small></div><div><b id="tH">00</b><small>HS</small></div><div><b id="tM">00</b><small>MIN</small></div><div><b id="tS">00</b><small>SEG</small></div></div>
+      <div class="cd-end">PROMO FINALIZADA</div></div>
     <div class="lbl">SI COMPRARAS TODO POR SEPARADO</div><div class="old" id="separatePrice"></div>
     <div class="save">AHORRÁS <span id="saveAmount"></span></div><div class="hr"></div>
     <div class="lbl">LLEVATE TODOS LOS PACKS POR</div><div class="now" id="megaPrice"></div><div class="once">UN SOLO PAGO · PACKS DIGITALES</div>
     <button class="btn block" id="megaAdd">QUIERO LA PROMO COMPLETA →</button>
   </div>
 </div></section></div>
+<section class="redes" id="redes"><div class="wrap"><h2>Seguinos en nuestras redes</h2><p>Mirá más diseños, novedades y escribinos cuando quieras.</p><div class="rs" id="redesList"></div></div></section>
 <footer><div class="wrap fi"><span>© Stukickers · Packs digitales</span><span>Diseños en PNG · Descarga digital · Medimos las visitas de forma anónima para mejorar la tienda</span></div></footer>
 </main>
 </div>
@@ -255,6 +278,7 @@ footer{border-top:1px solid #1f1f1f;padding:24px 0 90px;color:#737373;font-size:
 </div>
 
 <a class="wa" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.500l1.700-5.300A8.400 8.400 0 1 1 21 11.500z"/><path d="M9 9.500c.5 2.500 2.500 4.500 5 5l1.200-1.300-1.800-.9-.8.700c-.9-.4-1.700-1.200-2.100-2.100l.7-.8-.9-1.800z" fill="currentColor" stroke="none"/></svg></a>
+<aside class="promo-side" id="promoSide" aria-label="Promo por tiempo limitado"><button class="ps-main" id="promoGo"><svg class="arr" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15M5 12l7 7 7-7"/></svg><span><strong>TENEMOS UNA PROMO ESPECIAL POR TIEMPO LIMITADO</strong><em id="miniT"></em></span></button><button class="ps-x" id="promoX" aria-label="Cerrar aviso">×</button></aside>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
 <script>
@@ -268,12 +292,27 @@ const CONFIG={
   logo:'stukickersrojopng.png', // Nombre del archivo del logo (debe estar junto al HTML), URL o vacío para usar el placeholder
   logoSide:'right', // 'right' o 'left'
   /* code = código corto de la promo que viaja en el mensaje de WhatsApp (lo lee ManyChat) */
-  promo:{name:'Promo todos los packs (+1000 diseños)',code:'PROMO',price:25000,designs:+1000,separatePrice:77000},
+  promo:{name:'Promo todos los packs (+1000 diseños)',code:'PROMO',endsAt:'2026-11-01T23:59:00-03:00',price:25000,designs:+1000,separatePrice:77000},
   /* FIREBASE: por ahora se usa SOLAMENTE para guardar estadísticas en la colección events.
      No administra productos ni cupones. Dejalo enabled:false si todavía no configuraste Firebase. */
   firebase:{enabled:false,apiKey:'',projectId:'',collection:'events'},
   debug:false // true = mostrar eventos en la consola del navegador (F12)
 };
+
+/* ============================== REDES ==================================
+   Completá la url de cada red; las que queden vacías no se muestran.
+   type: 'instagram','tiktok','facebook','youtube','x','whatsapp' o 'link' (ícono genérico).
+   Podés agregar todas las que quieras copiando una línea. 'auto' en WhatsApp usa tu número.
+   Al tocar el logo de arriba, la página baja a esta sección.
+   ===================================================================== */
+const SOCIALS=[
+  {name:'WhatsApp',type:'whatsapp',url:'auto'},
+  {name:'Instagram',type:'instagram',url:''},   // ej: 'https://instagram.com/tuusuario'
+  {name:'TikTok',type:'tiktok',url:''},
+  {name:'Facebook',type:'facebook',url:''},
+  {name:'YouTube',type:'youtube',url:''},
+  {name:'X',type:'x',url:''},
+];
 
 /* ======================= CÓDIGOS DE DESCUENTO =========================
    Copiá una línea de ejemplo y cambiá sus valores.
@@ -426,7 +465,7 @@ $('#detailAdd').addEventListener('click',()=>{if(activePack)toggle(activePack.id
 /* ============================ CARRITO ============================ */
 function toggle(id,src){const p=packs.find(x=>x.id===id);if(!p)return;const on=!selected.has(id);on?selected.add(id):selected.delete(id);TK(on?'cart_add':'cart_remove',{packId:id,name:p.name,price:p.price,source:src});toast(on?p.name+' agregado al carrito':p.name+' quitado del carrito');sync(true)}
 function sync(bump){const n=selected.size+(promoSelected?1:0);$('#cartCount').textContent=n;if(bump){const c=$('#openCart');c.classList.remove('bump');void c.offsetWidth;c.classList.add('bump')}
-  syncCards();syncDetail();$('#megaAdd').textContent=promoSelected?'PROMO AGREGADA AL CARRITO ✓':'QUIERO LA PROMO COMPLETA →';$('#megaAdd').classList.toggle('ok',promoSelected);
+  syncCards();syncDetail();$('#megaAdd').textContent=promoExpired?'PROMO FINALIZADA':promoSelected?'PROMO AGREGADA AL CARRITO ✓':'QUIERO LA PROMO COMPLETA →';$('#megaAdd').classList.toggle('ok',promoSelected);
   if($('#cartBackdrop').classList.contains('open'))renderCart();
   if(!$('#checkoutScreen').hidden){if(!calc().items.length)goCatalog();else renderCheckout()}}
 function renderCart(){const c=calc(),el=$('#cartContent');
@@ -438,7 +477,7 @@ $('#cartContent').addEventListener('click',e=>{const b=e.target.closest('button'
   else if(b.dataset.act==='pay'){closeOverlay('cartBackdrop');showCheckout()}
   else if(b.dataset.act){closeOverlay('cartBackdrop');if(b.dataset.act==='browse')$('#catalog').scrollIntoView()}});
 $('#openCart').addEventListener('click',()=>{renderCart();openOverlay('cartBackdrop');TK('cart_open',{items:calc().items.length})});
-$('#megaAdd').addEventListener('click',()=>{promoSelected=!promoSelected;selected.clear();TK(promoSelected?'promo_add':'promo_remove',{source:'promo'});toast(promoSelected?'Promo completa agregada al carrito':'Promo quitada del carrito');sync(true)});
+$('#megaAdd').addEventListener('click',()=>{if(promoExpired)return;promoSelected=!promoSelected;selected.clear();TK(promoSelected?'promo_add':'promo_remove',{source:'promo'});toast(promoSelected?'Promo completa agregada al carrito':'Promo quitada del carrito');sync(true)});
 
 /* ============================ CHECKOUT ============================ */
 function setStep(n){$('#stepper').innerHTML=['Carrito','Resumen','WhatsApp'].map((t,i)=>`<li class="${i+1<n?'done':i+1===n?'on':''}"><span class="n">${i+1<n?'✓':i+1}</span><span class="t">${t}</span></li>`).join('')}
@@ -481,10 +520,49 @@ $('#openWhatsApp').addEventListener('click',()=>{const c=calc(),id=orderId(),cod
 $('#waFloat').href='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent('Hola Stukickers! Tengo una consulta sobre los packs.');
 $('#waFloat').addEventListener('click',()=>TK('whatsapp_float_click'));
 
+/* ============================ PROMO: TIMER REAL + REDES ============================ */
+/* El timer cuenta hasta CONFIG.promo.endsAt, una fecha FIJA y la misma para todos los visitantes.
+   Cuando llega a cero, la promo se cierra de verdad (no se puede comprar). Para una nueva promo, cambiá endsAt. */
+let promoExpired=false,megaVisible=false,psOff=false;
+try{psOff=sessionStorage.getItem('stk_ps')==='0'}catch(e){}
+const endsAt=new Date(CONFIG.promo.endsAt||'').getTime(),hasTimer=!isNaN(endsAt);
+function psUpdate(){const el=$('#promoSide');if(!el)return;el.classList.toggle('show',hasTimer&&!promoExpired&&!psOff&&!megaVisible&&!$('.overlay.open')&&!document.body.classList.contains('in-co')&&!$('#catalogScreen').hidden)}
+function promoExpire(){promoExpired=true;clearInterval(promoTimer);$('#megaBox').classList.add('expired');$('#megaAdd').disabled=true;
+  if(promoSelected){promoSelected=false;toast('La promo finalizó y se quitó del carrito','err')}
+  sync();psUpdate()}
+function promoTick(){const left=endsAt-Date.now();if(left<=0){promoExpire();return}
+  const d=Math.floor(left/864e5),h=Math.floor(left/36e5)%24,m=Math.floor(left/6e4)%60,sec=Math.floor(left/1e3)%60,p=n=>String(n).padStart(2,'0');
+  $('#tD').textContent=d;$('#tH').textContent=p(h);$('#tM').textContent=p(m);$('#tS').textContent=p(sec);
+  $('#miniT').textContent='Termina en '+(d?d+'d ':'')+p(h)+':'+p(m)+':'+p(sec);psUpdate()}
+let promoTimer;
+function promoInit(){
+  if(!hasTimer){$('#cdWrap').hidden=true;$('#promoSide').remove();return}
+  promoTick();if(!promoExpired)promoTimer=setInterval(promoTick,1000);
+  if(io){new IntersectionObserver(es=>{megaVisible=es[0].isIntersecting;psUpdate()},{threshold:.15}).observe($('#megaPromo'))}
+  $('#promoGo').addEventListener('click',()=>{TK('promo_side_click');$('#megaPromo').scrollIntoView({behavior:RM.matches?'auto':'smooth',block:'center'})});
+  $('#promoX').addEventListener('click',()=>{psOff=true;try{sessionStorage.setItem('stk_ps','0')}catch(e){}psUpdate()})}
+const svgi=p=>'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';
+const ICONS={
+  instagram:svgi('<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6"/>'),
+  tiktok:svgi('<path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>'),
+  facebook:svgi('<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>'),
+  youtube:svgi('<path d="M22.5 6.4a2.8 2.8 0 0 0-2-2C18.9 4 12 4 12 4s-6.900 0-8.600.4a2.800 2.800 0 0 0-1.900 2A29 29 0 0 0 1 11.800a29 29 0 0 0 .5 5.300 2.800 2.800 0 0 0 1.900 2c1.700.4 8.600.4 8.600.4s6.900 0 8.600-.4a2.800 2.800 0 0 0 2-2 29 29 0 0 0 .4-5.300 29 29 0 0 0-.5-5.400z"/><path d="m9.800 15 5.700-3.200L9.800 8.500z"/>'),
+  x:svgi('<path d="M4 4l16 16M20 4L4 20"/>'),
+  whatsapp:svgi('<path d="M21 11.500a8.400 8.400 0 0 1-12.400 7.400L3 20.500l1.700-5.300A8.400 8.400 0 1 1 21 11.500z"/>'),
+  link:svgi('<path d="M10 13a5 5 0 0 0 7.500.5l3-3a5 5 0 0 0-7-7l-1.700 1.700M14 11a5 5 0 0 0-7.500-.5l-3 3a5 5 0 0 0 7 7l1.700-1.700"/>')};
+function redesInit(){
+  const box=$('#redesList');
+  box.innerHTML=SOCIALS.map(s=>{const u=s.url==='auto'?'https://wa.me/'+CONFIG.whatsapp:s.url;return u?`<a href="${esc(u)}" target="_blank" rel="noopener" data-net="${esc(s.name)}">${ICONS[s.type]||ICONS.link}<span>${esc(s.name)}</span></a>`:''}).join('');
+  if(!box.children.length)$('#redes').hidden=true;
+  box.addEventListener('click',e=>{const a=e.target.closest('a');if(a)TK('social_click',{network:a.dataset.net})});
+  $('#brandSlot').addEventListener('click',e=>{e.preventDefault();TK('logo_click');
+    const go=()=>$('#redes').scrollIntoView({behavior:RM.matches?'auto':'smooth'});
+    if(!$('#checkoutScreen').hidden){goCatalog();setTimeout(go,RM.matches?60:500)}else go()})}
+
 /* ============================ ARRANQUE ============================ */
 $('#separatePrice').textContent=money(CONFIG.promo.separatePrice);$('#saveAmount').textContent=money(CONFIG.promo.separatePrice-CONFIG.promo.price);$('#megaPrice').textContent=money(CONFIG.promo.price);
 window.STK={hash:hashCode,events:window.STK_EVENTS};   // en la consola: STK.hash('MICODIGO')
-render();sync();watch();
+render();sync();watch();promoInit();redesInit();
 TK('session_start',{path:location.pathname});
 $('#heroCta').addEventListener('click',()=>TK('hero_cta'));
 if(io){const seen=new Set(),so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&!seen.has(e.target.id)){seen.add(e.target.id);TK('section_view',{section:e.target.id})}}),{threshold:.3});['catalog','megaPromo'].forEach(i=>so.observe($('#'+i)))}
