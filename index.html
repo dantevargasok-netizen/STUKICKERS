@@ -159,6 +159,7 @@ footer{border-top:1px solid #1f1f1f;padding:24px 0 90px;color:#737373;font-size:
 .rs svg{color:var(--red)}
 body.in-co .promo-side{display:none}
 @media(max-width:720px){.ps-main strong{font-size:10px}.cd b{font-size:20px}.cd div{min-width:50px}}
+.add.dis{opacity:.35}
 </style>
 </head>
 <body>
@@ -291,8 +292,8 @@ const CONFIG={
   whatsapp:'5491164803498', // WhatsApp en formato internacional: 54 + 9 + código de área + número, sin + ni espacios
   logo:'stukickersrojopng.png', // Nombre del archivo del logo (debe estar junto al HTML), URL o vacío para usar el placeholder
   logoSide:'right', // 'right' o 'left'
-  /* code = código corto de la promo que viaja en el mensaje de WhatsApp (lo lee ManyChat) */
-  promo:{name:'Promo todos los packs (+1000 diseños)',code:'PROMO',endsAt:'2026-11-01T23:59:00-03:00',price:25000,designs:+1000,separatePrice:77000},
+  /* code = código corto de la promo que viaja en el mensaje de WhatsApp, como [PROMO] (lo lee ManyChat) */
+  promo:{name:'Promo todos los packs (+1000 diseños)',code:'PROMO',endsAt:'2026-11-17T23:59:00-03:00',price:25000,designs:+1000,separatePrice:77000},
   /* FIREBASE: por ahora se usa SOLAMENTE para guardar estadísticas en la colección events.
      No administra productos ni cupones. Dejalo enabled:false si todavía no configuraste Firebase. */
   firebase:{enabled:false,apiKey:'',projectId:'',collection:'events'},
@@ -307,7 +308,7 @@ const CONFIG={
    ===================================================================== */
 const SOCIALS=[
   {name:'WhatsApp',type:'whatsapp',url:'auto'},
-  {name:'Instagram',type:'instagram',url:'https://instagram.com/stukickers.ar'},   // ej: 'https://instagram.com/stukickers'
+  {name:'Instagram',type:'instagram',url:'https://instagram.com/stukickers.ar'},
   {name:'TikTok',type:'tiktok',url:'https://www.tiktok.com/@stukickers'},
   {name:'Facebook',type:'facebook',url:'https://www.facebook.com/profile.php?id=61585202143524&locale=es_LA'},
   {name:'YouTube',type:'youtube',url:''},
@@ -342,7 +343,7 @@ const DISCOUNTS=[
 
    code: código corto SIN espacios (ej. 'RN'). Viaja en el mensaje de WhatsApp como [RN]
          y es lo que ManyChat usa para poner la etiqueta del pack. No lo cambies después
-         de armar los flujos, o tenés que actualizarlos también.
+         de armar los flujos, o tenés que actualizarlos también. Cada code debe ser único.
    category: 'Música', 'Argentina', 'Series y películas' u 'Otros'.
    price: precio en pesos, solo número (ej. 5500).
    count: cantidad que se muestra, como texto (ej. '+250 diseños' o '12 diseños').
@@ -440,7 +441,7 @@ function render(){
   g.innerHTML=shown.map((p,i)=>`<article class="pack" data-id="${p.id}" data-reveal style="--d:${(i%4)*70}ms">${artHTML(p)}<div class="pack-info"><h3 class="pack-title"><button aria-label="Ver detalles de ${esc(p.name)}">${esc(p.name)}</button></h3><p class="pack-desc">${esc(p.desc)}</p><div class="meta"><div class="price">${money(p.price)}<small>Pago único · pack digital</small></div><button class="add" data-add="${p.id}"></button></div></div></article>`).join('');
   syncCards();watch();
 }
-function syncCards(){$$('.add[data-add]').forEach(b=>{const p=packs.find(x=>x.id==b.dataset.add),on=selected.has(p.id);b.classList.toggle('on',on);b.textContent=on?'✓':'+';b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',(on?'Quitar ':'Agregar ')+p.name+(on?' del carrito':' al carrito'))})}
+function syncCards(){$$('.add[data-add]').forEach(b=>{const p=packs.find(x=>x.id==b.dataset.add),on=selected.has(p.id);b.classList.toggle('on',on);b.classList.toggle('dis',promoSelected&&!on);b.textContent=on?'✓':'+';b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',(on?'Quitar ':'Agregar ')+p.name+(on?' del carrito':' al carrito'))})}
 $('#grid').addEventListener('click',e=>{const add=e.target.closest('[data-add]');if(add){e.stopPropagation();toggle(Number(add.dataset.add),'card');add.classList.remove('pop');void add.offsetWidth;add.classList.add('pop');return}const c=e.target.closest('.pack');if(c)openDetail(Number(c.dataset.id))});
 function setCat(c){category=c;$$('.filter').forEach(b=>{const on=b.dataset.category===c;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on)})}
 $$('.filter').forEach(b=>b.addEventListener('click',()=>{setCat(b.dataset.category);TK('filter',{category:b.dataset.category});render()}));
@@ -459,11 +460,11 @@ function openDetail(id){const p=packs.find(x=>x.id===id);if(!p)return;activePack
   $('#detailFeatures').innerHTML=['Archivos digitales en formato PNG (según el pack)','Descarga digital; no incluye prendas físicas','Revisá la descripción y el contenido antes de comprar'].map(x=>`<li>${x}</li>`).join('');
   $('#detailVideo').innerHTML=videoHTML(p.video)||`<div class="vph"><div class="play">▶</div><strong>Video de muestra: ${esc(p.name)}</strong><p>Pegá el link del video en este pack (campo video) y se reproduce acá.</p></div>`;
   syncDetail();openOverlay('detailBackdrop');TK('pack_view',{packId:p.id,name:p.name,price:p.price})}
-function syncDetail(){if(!activePack)return;const on=selected.has(activePack.id),b=$('#detailAdd');b.textContent=on?'QUITAR DEL CARRITO':'AGREGAR AL CARRITO';b.classList.toggle('ok',on)}
+function syncDetail(){if(!activePack)return;const on=selected.has(activePack.id),b=$('#detailAdd');b.textContent=promoSelected?'YA INCLUIDO EN LA PROMO':on?'QUITAR DEL CARRITO':'AGREGAR AL CARRITO';b.classList.toggle('ok',on)}
 $('#detailAdd').addEventListener('click',()=>{if(activePack)toggle(activePack.id,'detalle')});
 
 /* ============================ CARRITO ============================ */
-function toggle(id,src){const p=packs.find(x=>x.id===id);if(!p)return;const on=!selected.has(id);on?selected.add(id):selected.delete(id);TK(on?'cart_add':'cart_remove',{packId:id,name:p.name,price:p.price,source:src});toast(on?p.name+' agregado al carrito':p.name+' quitado del carrito');sync(true)}
+function toggle(id,src){const p=packs.find(x=>x.id===id);if(!p)return;const on=!selected.has(id);if(on&&promoSelected){toast('La promo ya incluye todos los packs','err');return}on?selected.add(id):selected.delete(id);TK(on?'cart_add':'cart_remove',{packId:id,name:p.name,price:p.price,source:src});toast(on?p.name+' agregado al carrito':p.name+' quitado del carrito');sync(true)}
 function sync(bump){const n=selected.size+(promoSelected?1:0);$('#cartCount').textContent=n;if(bump){const c=$('#openCart');c.classList.remove('bump');void c.offsetWidth;c.classList.add('bump')}
   syncCards();syncDetail();$('#megaAdd').textContent=promoExpired?'PROMO FINALIZADA':promoSelected?'PROMO AGREGADA AL CARRITO ✓':'QUIERO LA PROMO COMPLETA →';$('#megaAdd').classList.toggle('ok',promoSelected);
   if($('#cartBackdrop').classList.contains('open'))renderCart();
@@ -477,7 +478,7 @@ $('#cartContent').addEventListener('click',e=>{const b=e.target.closest('button'
   else if(b.dataset.act==='pay'){closeOverlay('cartBackdrop');showCheckout()}
   else if(b.dataset.act){closeOverlay('cartBackdrop');if(b.dataset.act==='browse')$('#catalog').scrollIntoView()}});
 $('#openCart').addEventListener('click',()=>{renderCart();openOverlay('cartBackdrop');TK('cart_open',{items:calc().items.length})});
-$('#megaAdd').addEventListener('click',()=>{if(promoExpired)return;promoSelected=!promoSelected;selected.clear();TK(promoSelected?'promo_add':'promo_remove',{source:'promo'});toast(promoSelected?'Promo completa agregada al carrito':'Promo quitada del carrito');sync(true)});
+$('#megaAdd').addEventListener('click',()=>{if(promoExpired)return;const had=selected.size;promoSelected=!promoSelected;if(promoSelected)selected.clear();TK(promoSelected?'promo_add':'promo_remove',{source:'promo',removedPacks:had});toast(promoSelected?(had?'Promo agregada: se quitaron los packs sueltos porque ya están incluidos':'Promo completa agregada al carrito'):'Promo quitada del carrito');sync(true)});
 
 /* ============================ CHECKOUT ============================ */
 function setStep(n){$('#stepper').innerHTML=['Carrito','Resumen','WhatsApp'].map((t,i)=>`<li class="${i+1<n?'done':i+1===n?'on':''}"><span class="n">${i+1<n?'✓':i+1}</span><span class="t">${t}</span></li>`).join('')}
@@ -511,11 +512,10 @@ $('#applyDiscount').addEventListener('click',applyDiscount);
 $('#discountCode').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applyDiscount()}});
 
 /* WhatsApp */
-/* Código de pedido único (sin 0/O/1/I para que no se confunda). Lo lee ManyChat y queda en las estadísticas. */
-const orderId=()=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let o='';const r=window.crypto&&crypto.getRandomValues?crypto.getRandomValues(new Uint8Array(5)):Array.from({length:5},()=>Math.floor(Math.random()*256));for(const v of r)o+=a[v%a.length];return 'STK-'+o};
-$('#openWhatsApp').addEventListener('click',()=>{const c=calc(),id=orderId(),codes=c.items.map(p=>p.code||'?');
-  const msg=['Hola Stukickers! Quiero comprar:',...c.items.map(p=>`- ${p.name}: ${money(p.price)}`),`Total de diseños: ${c.designs.toLocaleString('es-AR')}+`,`Subtotal: ${money(c.sub)}`,`Descuento: ${c.disc?dLabel(applied)+' (-'+money(c.disc)+')':'No aplicado'}`,`TOTAL A PAGAR: ${money(c.total)}`,'',`Pedido: ${id}`,`Packs: ${codes.map(x=>'['+x+']').join(' ')}`,'','Quedo a la espera del alias para realizar el pago.'].join('\n');
-  TK('whatsapp_click',{orderId:id,packCodes:codes,total:c.total,subtotal:c.sub,discount:c.disc,discountId:applied?applied.id:null,items:c.items.map(i=>i.name)});
+/* Mensaje del carrito. Formato fijo (lo lee ManyChat): CARRITOWEB: + un "[CODIGO] pack" por línea + total + diseños. */
+$('#openWhatsApp').addEventListener('click',()=>{const c=calc();
+  const msg=['CARRITOWEB:',...c.items.map(p=>'['+(p.code||'?')+'] '+p.name),'cantidad a pagar: '+money(c.total),'cantidad de diseños por adquirir: '+c.designs.toLocaleString('es-AR')+'+','','Quedo a la espera del alias!'].join('\n');
+  TK('whatsapp_click',{total:c.total,subtotal:c.sub,discount:c.disc,discountId:applied?applied.id:null,items:c.items.map(i=>i.name)});
   window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msg),'_blank','noopener')});
 $('#waFloat').href='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent('Hola Stukickers! Tengo una consulta sobre los packs.');
 $('#waFloat').addEventListener('click',()=>TK('whatsapp_float_click'));
