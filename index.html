@@ -292,8 +292,10 @@ const CONFIG={
   whatsapp:'5491164803498', // WhatsApp en formato internacional: 54 + 9 + código de área + número, sin + ni espacios
   logo:'stukickersrojopng.png', // Nombre del archivo del logo (debe estar junto al HTML), URL o vacío para usar el placeholder
   logoSide:'right', // 'right' o 'left'
-  /* code = código corto de la promo que viaja en el mensaje de WhatsApp, como [PROMO] (lo lee ManyChat) */
-  promo:{name:'Promo todos los packs (+1000 diseños)',code:'PROMO',endsAt:'2026-11-17T23:59:00-03:00',price:25000,designs:+1000,separatePrice:77000},
+  /* code = código corto de la promo que viaja en el mensaje de WhatsApp, como [PROMO] (lo lee ManyChat)
+     endsAt = fin de la promo (fecha fija, igual para todos). weekly:true = la promo se renueva cada domingo 23:59
+     (hora Argentina) para todos por igual; usalo solo si de verdad mantenés la promo cada semana. */
+  promo:{name:'Promo todos los packs (+1000 diseños)',code:'PROMO',endsAt:'2026-11-27T23:59:00-03:00',weekly:false,price:25000,designs:+1000,separatePrice:77000},
   /* FIREBASE: por ahora se usa SOLAMENTE para guardar estadísticas en la colección events.
      No administra productos ni cupones. Dejalo enabled:false si todavía no configuraste Firebase. */
   firebase:{enabled:false,apiKey:'',projectId:'',collection:'events'},
@@ -321,6 +323,7 @@ const SOCIALS=[
    active:false desactiva un cupón sin borrarlo.
    expires:'2026-12-31' establece el último día válido (opcional).
    minSubtotal:5000 exige un subtotal mínimo (opcional).
+   onlyPromo:true hace que el cupón valga solo con la promo de todos los packs (opcional).
 
    Ejemplo porcentaje: {id:'lanzamiento10',code:'LANZAMIENTO10',type:'percent',value:10}
    Ejemplo importe fijo: {id:'mil-pesos',code:'MILPESOS',type:'fixed',value:1000,minSubtotal:5000}
@@ -332,6 +335,7 @@ const SOCIALS=[
 const DISCOUNTS=[
   {id:'interno-15',hash:'1uxw6rsel4k',type:'percent',value:15},
   {id:'lanzamiento10',code:'LANZAMIENTO10',type:'percent',value:10},
+  {id:'promohoy',code:'PROMOHOY',type:'percent',value:25,onlyPromo:true},   // onlyPromo:true = solo vale con la promo de todos los packs
   // {id:'mil-pesos',code:'MILPESOS',type:'fixed',value:1000,minSubtotal:5000},
   // {id:'promo-vencible',code:'PROMO15',type:'percent',value:15,expires:'2026-12-31'},
 ];
@@ -410,7 +414,7 @@ const TK=(()=>{
 /* ============================ ESTADO ============================ */
 let category='Todos',selected=new Set(),promoSelected=false,applied=null,activePack=null,busy=false,lastFocus=null;
 const items=()=>{const a=packs.filter(p=>selected.has(p.id)).map(p=>({id:p.id,name:p.name,price:p.price,count:parseInt(String(p.count).replace(/\D/g,''))||0,cover:p.cover,style:p.style,art:p.art,code:p.code||''}));if(promoSelected)a.push({id:'promo',name:CONFIG.promo.name,price:CONFIG.promo.price,count:CONFIG.promo.designs,style:'red',art:'PROMO',code:CONFIG.promo.code||'PROMO'});return a};
-const discOf=sub=>!applied?0:applied.type==='percent'?Math.round(sub*applied.value/100):Math.min(applied.value,sub);
+const discOf=sub=>!applied||(applied.onlyPromo&&!promoSelected)?0:applied.type==='percent'?Math.round(sub*applied.value/100):Math.min(applied.value,sub);
 const calc=()=>{const it=items(),sub=it.reduce((s,p)=>s+p.price,0),disc=discOf(sub);return{items:it,sub,disc,total:sub-disc,designs:it.reduce((s,p)=>s+p.count,0)}};
 const dLabel=d=>d.type==='percent'?d.value+'%':money(d.value);
 
@@ -502,6 +506,7 @@ function findDiscount(raw){const c=String(raw).trim().toUpperCase().replace(/\s+
 function applyDiscount(){const raw=$('#discountCode').value,m=$('#discountMessage'),inp=$('#discountCode'),d=findDiscount(raw),sub=calc().sub;
   let ok=!!d,msg;
   if(d&&d.minSubtotal&&sub<d.minSubtotal){ok=false;msg='Este código requiere una compra mínima de '+money(d.minSubtotal)+'.'}
+  if(d&&d.onlyPromo&&!promoSelected){ok=false;msg='Este código solo aplica a la promo de todos los packs.'}
   if(ok){applied=d;msg='¡Código aplicado correctamente! Tenés un '+dLabel(d)+' de descuento.'}
   else{applied=null;msg=msg||(raw.trim()?'Ese código no es válido. Revisá e intentá de nuevo.':'Ingresá tu código de descuento.')}
   m.className='dmsg in '+(ok?'ok':'err');m.textContent=msg;m.style.animation='none';void m.offsetWidth;m.style.animation='';
@@ -525,12 +530,13 @@ $('#waFloat').addEventListener('click',()=>TK('whatsapp_float_click'));
    Cuando llega a cero, la promo se cierra de verdad (no se puede comprar). Para una nueva promo, cambiá endsAt. */
 let promoExpired=false,megaVisible=false,psOff=false;
 try{psOff=sessionStorage.getItem('stk_ps')==='0'}catch(e){}
-const endsAt=new Date(CONFIG.promo.endsAt||'').getTime(),hasTimer=!isNaN(endsAt);
+function weeklyEnd(){const a=new Date(Date.now()-3*36e5);let t=Date.UTC(a.getUTCFullYear(),a.getUTCMonth(),a.getUTCDate()+(7-a.getUTCDay())%7,23,59,0)+3*36e5;if(t<=Date.now())t+=7*864e5;return t}
+let endsAt=CONFIG.promo.weekly?weeklyEnd():new Date(CONFIG.promo.endsAt||'').getTime();const hasTimer=!isNaN(endsAt);
 function psUpdate(){const el=$('#promoSide');if(!el)return;el.classList.toggle('show',hasTimer&&!promoExpired&&!psOff&&!megaVisible&&!$('.overlay.open')&&!document.body.classList.contains('in-co')&&!$('#catalogScreen').hidden)}
 function promoExpire(){promoExpired=true;clearInterval(promoTimer);$('#megaBox').classList.add('expired');$('#megaAdd').disabled=true;
   if(promoSelected){promoSelected=false;toast('La promo finalizó y se quitó del carrito','err')}
   sync();psUpdate()}
-function promoTick(){const left=endsAt-Date.now();if(left<=0){promoExpire();return}
+function promoTick(){const left=endsAt-Date.now();if(left<=0){if(CONFIG.promo.weekly){endsAt=weeklyEnd();return promoTick()}promoExpire();return}
   const d=Math.floor(left/864e5),h=Math.floor(left/36e5)%24,m=Math.floor(left/6e4)%60,sec=Math.floor(left/1e3)%60,p=n=>String(n).padStart(2,'0');
   $('#tD').textContent=d;$('#tH').textContent=p(h);$('#tM').textContent=p(m);$('#tS').textContent=p(sec);
   $('#miniT').textContent='Termina en '+(d?d+'d ':'')+p(h)+':'+p(m)+':'+p(sec);psUpdate()}
